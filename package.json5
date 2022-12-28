@@ -1,0 +1,47 @@
+{
+  name: "segfault",
+  version: "4.0.0α",
+
+  packageManager: "yarn@3.3.1",
+
+  scripts: {
+    "ts-node": "ts-node ./src/segfault.ts",
+
+    //Conversion from JSON5 to JSON
+    //Run install-package
+    "convert-package": "json5 ./package.json5 -s 2 -o ./package.json",
+    "install-package": "yarn convert-package && yarn install"
+  },
+
+  dependencies: {
+    //Discord JS packages
+    "@discordjs/builders": "^1.4.0",
+    "@discordjs/rest": "^1.5.0",
+    "discord-api-types": "^0.37.24",
+    "discord.js": "^14.7.1",
+
+    //Packages used for logging
+    "winston": "^3.8.2",
+    "dayjs": "^1.11.7", //In particular, DayJS is just used for formatting dates
+    
+    "json5": "^2.2.2",
+    "node-dir": "^0.1.17",
+
+    //TypeScript stuff
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.4",
+  },
+  devDependencies: {
+    //Types
+    "@types/node": "^18.11.18",
+    "@types/node-dir": "^0.0.34",
+
+    //Eslint
+    "@typescript-eslint/eslint-plugin": "^5.47.1",
+    "@typescript-eslint/parser": "^5.47.1",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+
+    "prettier": "^2.8.1",
+  },
+}
