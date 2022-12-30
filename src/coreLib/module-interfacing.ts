@@ -18,8 +18,6 @@ export async function loadModule(filepath: FilePath) {
   try {
     const { default: module } = importFresh<ICommandLoader>(filepath);
 
-    console.log(module.info);
-
     //If module already loaded.
     if (__LOADED_MODULES[module.info.name]) {
       logger.warn(
