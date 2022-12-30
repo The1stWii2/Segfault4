@@ -69,15 +69,13 @@ features.
  messages, Commands, and perhaps other methods.
  - **Pin Message** – A Module to allow allowed users to post embeds to
  predetermined channels.
- - **Portal** - An aptly named Module that'll let users move the conversation
- to another channel, whilst keeping them linked by having **Segfault** post
- connected buttons.
 
 
 
  ## Hold on, if that's the _planned_ stuff, what's actually included?
- Er... A dummy `debug` command that doesn't do anything and a command that
- performs a soft reset.
+ Er... A dummy `debug` command that doesn't do anything, a command that performs
+ a soft reset, but is disabled, and a command that just links 2 channels
+ together.
 
 
 
