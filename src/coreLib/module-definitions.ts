@@ -16,7 +16,7 @@ import { TEpisode } from "./command-definitions";
  * @param postLoad - An __optional__ method that is called after Initialisation.
  * @param config - An __optional__ method that is called for configuration purposes.
  */
-export interface IModule<GlobalStore extends JSONValue = JSONValue, GuildStore extends JSONValue = JSONValue> {
+export interface IModule<GlobalStore = JSONValue, GuildStore = JSONValue> {
   /**
    * Array of `strings` that will be used to search for this Module.
    *
