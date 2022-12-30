@@ -12,7 +12,7 @@ custom-built Discord bot _platform_. It is designed to be expanded upon by
 others.
 
 Unlike other Discord bots, **Segfault** has 2 goals in mind:
-### 1. Manage a group of guild at a time.
+### 1. Manage a handful of guilds at a time.
 As opposed to bigger bots which are designed to handle 100s of guilds at the
 same time, or smaller bots which are only run in a single server, **Segfault**
 is designed with managed a couple at the same time. Like a group of servers,
