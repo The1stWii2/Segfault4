@@ -26,7 +26,7 @@ const Module: IModule = {
   tags: ["basic"],
   info: { name: "Reload", shortDescr: "Commands for resetting parts of the bot" },
   init: () => {
-    __COMMAND_HANDLER.addCommandGlobal(ReloadModules, "Reload");
+    //__COMMAND_HANDLER.addCommandGlobal(ReloadModules, "Reload");
   },
 };
 
