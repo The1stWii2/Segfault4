@@ -13,14 +13,15 @@ import pc from "picocolors";
 
 export async function init(registerCommands = false) {
   //Load Modules
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 1/7"))}\nLoading Modules\n`);
+  logger.verbose(`\n${pc.underline(pc.bold("Stage 1/5"))}\nLoading Modules\n`);
   await loadAllModules();
 
   //Initialise Modules
+  logger.verbose(`\n${pc.underline(pc.bold("Stage 2/5"))}\nInitialising Modules\n`);
   await setUpModules(__COMMAND_HANDLER);
 
   //Set-up Client
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 5/7"))}\nConfiguring Client\n`);
+  logger.verbose(`\n${pc.underline(pc.bold("Stage 3/5"))}\nConfiguring Client\n`);
   __client.once("ready", async () => {
     logger.info("Logged in");
   });
@@ -31,11 +32,11 @@ export async function init(registerCommands = false) {
   if (registerCommands) await __COMMAND_HANDLER.sync("all");
 
   //Load any Events
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 6/7"))}\nLoading Events\n`);
+  logger.verbose(`\n${pc.underline(pc.bold("Stage 4/5"))}\nLoading Events\n`);
   //TODO, this
 
   //Login Client
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 7/7"))}\nLogging in\n`);
+  logger.verbose(`\n${pc.underline(pc.bold("Stage 5/5"))}\nLogging in\n`);
   void __client.login(__CONFIGURATION__.secrets.discordToken);
 }
 

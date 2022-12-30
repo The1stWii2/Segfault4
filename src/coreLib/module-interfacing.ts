@@ -69,7 +69,6 @@ export async function loadAllModules() {
 
 export async function initialiseModules() {
   //Run any Init functions
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 2/7"))}\nRunning ${pc.italic("Init")} Functions\n`);
   for (const moduleName in __LOADED_MODULES) {
     if (typeof __LOADED_MODULES[moduleName].init === "function") {
       logger.info(`"${moduleName}" running Init function.`);
@@ -83,7 +82,6 @@ export async function initialiseModules() {
 
 export async function loadGuildStoreModules() {
   //Load Guild configs
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 3/7"))}\nReading Guild store\n`);
   const files = fs
     .readdirSync(__CONFIGURATION__.filepaths.storageLocation)
     .filter((item) => item.match(/\d.+?\.json/))
@@ -106,7 +104,6 @@ export async function loadGuildStoreModules() {
 
 export async function postLoadModules() {
   //Run any Post Init functions
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 4/7"))}\nRunning ${pc.italic("Post Init")} Functions\n`);
   for (const moduleName in __LOADED_MODULES) {
     if (typeof __LOADED_MODULES[moduleName].postLoad === "function") {
       logger.info(`"${moduleName}" running Post Init function.`);
