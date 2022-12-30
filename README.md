@@ -1,6 +1,6 @@
 # Segfault
 
-> **Segfault** (v4.0.0α) is a Discord bot written in TypeScript using Discord.JS for the
+> **Segfault** (v4.2.0α) is a Discord bot written in TypeScript using Discord.JS for the
 **Thinking with Portals**' Discord.
 
 ----

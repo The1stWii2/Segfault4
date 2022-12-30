@@ -1,6 +1,6 @@
 {
   "name": "segfault",
-  "version": "4.0.0α",
+  "version": "4.2.0α",
   "packageManager": "yarn@3.3.1",
   "scripts": {
     "ts-node": "ts-node ./src/segfault.ts",
