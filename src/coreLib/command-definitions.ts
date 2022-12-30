@@ -4,9 +4,14 @@ import * as DiscordAPI from "discord-api-types/v10";
 import logger from "../shared/logger";
 import { IInfo } from "./module-definitions";
 
+type TBuilder =
+  | DiscordJS.SlashCommandBuilder
+  | DiscordJS.ContextMenuCommandBuilder
+  | Omit<DiscordJS.SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+
 export interface ICommand {
   info: IInfo;
-  builder: DiscordJS.SlashCommandBuilder | DiscordJS.ContextMenuCommandBuilder;
+  builder: TBuilder;
   episode: TEpisode;
 }
 
@@ -72,7 +77,7 @@ export class CommandHandler {
   }
 
   async sync(guilds: DiscordJS.Snowflake[] | "all" | "global") {
-    const commandList: (DiscordJS.SlashCommandBuilder | DiscordJS.ContextMenuCommandBuilder)[] = [];
+    const commandList: TBuilder[] = [];
 
     //TODO: Populate this with the actual correct items to populate
     for (const command of this.commandStore) {
