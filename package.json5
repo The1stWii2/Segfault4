@@ -6,6 +6,7 @@
 
   scripts: {
     "ts-node": "ts-node ./src/segfault.ts",
+    "ts-node-reload": "ts-node ./src/segfault.ts -R",
 
     //Conversion from JSON5 to JSON
     //Run install-package
@@ -14,6 +15,8 @@
   },
 
   dependencies: {
+    "src": "link:./src",
+
     //Discord JS packages
     "@discordjs/builders": "^1.4.0",
     "@discordjs/rest": "^1.5.0",
@@ -23,13 +26,15 @@
     //Packages used for logging
     "winston": "^3.8.2",
     "dayjs": "^1.11.7", //In particular, DayJS is just used for formatting dates
-    
-    "json5": "^2.2.2",
-    "node-dir": "^0.1.17",
 
     //TypeScript stuff
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4",
+    
+    "json5": "^2.2.2",
+    "picocolors": "^1.0.0",
+    "node-dir": "^0.1.17", //Might become obsolete soon. Slowly moving to fs-only
+    "import-fresh": "^3.3.0", //Used for soft-resetting.
   },
   devDependencies: {
     //Types

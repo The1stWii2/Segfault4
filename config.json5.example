@@ -1,0 +1,26 @@
+{    
+    //------------
+    //Secrets
+    //------------
+    secrets: {
+        applicationID: "1234567890",
+        discordToken: "DISCORD.TOKEN.HERE",
+    },
+
+    //------------
+    //Filepaths
+    //------------
+    filepaths: {
+        commandLocations: ["./src/commands"],
+        storageLocation: "./storage",
+        logLocation: "./logs",
+    },
+
+    //------------
+    //Other
+    //------------
+    other: {
+        supressNonFatalErrors: true,
+        consoleLoggingLevel: "silly",
+    },
+}
