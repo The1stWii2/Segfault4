@@ -2,7 +2,7 @@ import * as DiscordJS from "discord.js";
 import * as DiscordAPI from "discord-api-types/v10";
 
 import { __client } from "../shared/client";
-import { ICommand, IModule, initialiseModules, loadAllModules, setUpModules } from "../coreLib";
+import { ICommand, IModule, initialiseModules, loadAllModules, postLoadModules, setUpModules } from "../coreLib";
 import { __COMMAND_HANDLER } from "../shared/globals";
 
 const ReloadModules: ICommand = {
@@ -14,6 +14,7 @@ const ReloadModules: ICommand = {
     try {
       await loadAllModules();
       await setUpModules(__COMMAND_HANDLER);
+      await postLoadModules();
       await interaction.reply({ ephemeral: true, content: "Done!" });
     } catch (err) {
       console.error(err);
@@ -26,7 +27,7 @@ const Module: IModule = {
   tags: ["basic"],
   info: { name: "Reload", shortDescr: "Commands for resetting parts of the bot" },
   init: () => {
-    //__COMMAND_HANDLER.addCommandGlobal(ReloadModules, "Reload");
+    __COMMAND_HANDLER.addCommandGlobal(ReloadModules, "Reload");
   },
 };
 
