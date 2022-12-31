@@ -63,7 +63,7 @@ export interface IModule<GlobalStore = JSONValue, GuildStore = JSONValue> {
    * @param store - A `JSON` object which is the Module's block in the Global
    *  store. `Undefined` if no block exists.
    */
-  postLoad?: () => void;
+  postLoad?: (store: GlobalStore | undefined) => void;
   config?: TEpisode;
 }
 

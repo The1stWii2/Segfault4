@@ -106,9 +106,9 @@ export async function postLoadModules() {
     if (typeof __LOADED_MODULES[moduleName].postLoad === "function") {
       logger.info(`"${moduleName}" running Post Init function.`);
 
-      const config = loadStoreFile("global", moduleName);
+      const store = loadStoreFile("global", moduleName);
       //@ts-expect-error Apparently TS type inference fails here. It still thinks "once" can be undefined.
-      __LOADED_MODULES[moduleName].postLoad(config);
+      __LOADED_MODULES[moduleName].postLoad(store);
     }
   }
 }
@@ -117,5 +117,4 @@ export async function setUpModules(commandHandler: CommandHandler) {
   commandHandler.clear();
   await initialiseModules();
   await loadGuildStoreModules();
-  await postLoadModules();
 }
