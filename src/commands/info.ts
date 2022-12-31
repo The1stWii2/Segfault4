@@ -12,7 +12,7 @@ const SegInfo: ICommand = {
     const embed = new DiscordJS.EmbedBuilder()
       .setColor(0x00ff00)
       .setTitle("Segfault")
-      .setDescription("Temp")
+      .setDescription("https://github.com/The1stWii2/Segfault4")
       .setImage("https://media.discordapp.net/attachments/588736222415814660/1058426064868753558/segfault.png")
       .setFooter({ text: "Version: 4.2.0α" });
 
