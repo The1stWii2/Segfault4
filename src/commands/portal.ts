@@ -1,5 +1,5 @@
 import * as DiscordJS from "discord.js";
-import { ICommand, IModule } from "../coreLib";
+import { ICommand, IModule, saveStoreFile } from "../coreLib";
 import { __client } from "../shared/client";
 
 import { __COMMAND_HANDLER } from "../shared/globals";
@@ -7,6 +7,11 @@ import { __COMMAND_HANDLER } from "../shared/globals";
 const emojis = {} as IEmojis;
 
 interface IEmojis {
+  entry: DiscordJS.GuildEmoji;
+  exit: DiscordJS.GuildEmoji;
+}
+
+interface IGlobalStore {
   entry: string;
   exit: string;
 }
@@ -29,6 +34,15 @@ const ReloadCommands: ICommand = {
         )
     ),
   episode: async (interaction: DiscordJS.ContextMenuCommandInteraction) => {
+    if (!emojis.entry || !emojis.exit) {
+      await interaction.reply({
+        ephemeral: true,
+        content:
+          "Emojis for this command have not been correctly configured, please run `/config Portal Portal` first.",
+      });
+      return;
+    }
+
     const channelResp = interaction.options.get("destination");
     if (!channelResp) {
       await interaction.reply({
@@ -65,7 +79,7 @@ const ReloadCommands: ICommand = {
 
     const exitButton = new DiscordJS.ActionRowBuilder<DiscordJS.ButtonBuilder>().addComponents(
       new DiscordJS.ButtonBuilder()
-        .setLabel(`Portal on over to #${(reply.channel as DiscordJS.TextChannel).name}`)
+        .setLabel(`Portal back to #${(reply.channel as DiscordJS.TextChannel).name}`)
         .setStyle(DiscordJS.ButtonStyle.Link)
         .setURL(reply.url)
     );
@@ -76,16 +90,24 @@ const ReloadCommands: ICommand = {
   },
 };
 
-const Module: IModule<IEmojis> = {
+const Module: IModule<IGlobalStore> = {
   tags: ["communication"],
   info: { name: "Portal", shortDescr: "Move from one channel to another" },
   init: (store) => {
-    if (store) {
-      //See note in store-interfacing
-      emojis.entry = __client.emojis.cache.get(store.emojis.entry);
-      emojis.exit = __client.emojis.cache.get(store.emojis.exit);
-    }
     __COMMAND_HANDLER.addCommandGlobal(ReloadCommands, "Portal");
+  },
+  postLoad: (store) => {
+    //Read in Emojis
+    if (store) {
+      emojis.entry = __client.emojis.cache.get(store.entry)!;
+      emojis.exit = __client.emojis.cache.get(store.exit)!;
+    } else {
+      const newConfig: IGlobalStore = { entry: "1234", exit: "0987" };
+      saveStoreFile("global", "Portal", newConfig);
+    }
+
+    const foo = __client;
+    console.log(store);
   },
 };
 
