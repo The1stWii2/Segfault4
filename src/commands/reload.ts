@@ -8,7 +8,7 @@ import { __COMMAND_HANDLER } from "../shared/globals";
 const ReloadModules: ICommand = {
   info: { name: "Reload Modules", shortDescr: "Rescan directories and reload Modules" },
   builder: new DiscordJS.SlashCommandBuilder()
-    .setName("soft-reset")
+    .setName("reload-modules")
     .setDescription("Rescan directories and reload Modules"),
   episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
     try {
