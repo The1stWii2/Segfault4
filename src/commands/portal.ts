@@ -105,9 +105,6 @@ const Module: IModule<IGlobalStore> = {
       const newConfig: IGlobalStore = { entry: "1234", exit: "0987" };
       saveStoreFile("global", "Portal", newConfig);
     }
-
-    const foo = __client;
-    console.log(store);
   },
 };
 
