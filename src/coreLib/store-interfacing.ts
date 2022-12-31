@@ -8,16 +8,13 @@ interface JSONLoose {
 
 export function loadStoreFile<T = JSONValue>(guildID: `${number}` | "global", command?: string): T | undefined {
   if (fs.existsSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`))) {
-    const store = JSON.parse(
-      String(fs.readFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`)))
-    ) as JSONLoose;
+    const file = fs.readFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`));
+
+    const store = JSON.parse(String(file)) as JSONLoose;
 
     if (command === undefined) {
       return store as T;
     }
-    //This returns the object still within the command's Object. We'll need to unwrap that.
-    //TODO: Actually unwrap the top level. Object.values()[0] just crashes for some reason.
-    //But doesn't crash depending where its called???
     return store[command] as T;
   }
   throw new Error(`Storage file for "${guildID}" was requested, but no such file exists!`);
@@ -25,8 +22,8 @@ export function loadStoreFile<T = JSONValue>(guildID: `${number}` | "global", co
 
 //TODO, ideally "command" should be implicitly passed, but that'll have to wait till I replace
 //objects with classes
-export function saveStoreFile(guildID: `${number}` | "global", command: string, data: JSONValue) {
-  let store: JSONValue = {};
+export function saveStoreFile<T = JSONValue>(guildID: `${number}` | "global", command: string, data: T) {
+  let store: JSONLoose = {};
   if (fs.existsSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`))) {
     store = JSON.parse(
       String(fs.readFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`)))
