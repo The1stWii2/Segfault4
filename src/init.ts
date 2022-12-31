@@ -8,7 +8,7 @@ import path from "path";
 
 import { __client } from "./shared/client";
 import __CONFIGURATION__, { __COMMAND_HANDLER, __LOADED_MODULES } from "./shared/globals";
-import { initialiseModules, loadAllModules, loadStoreFile, setUpModules, TInteraction } from "./coreLib";
+import { loadAllModules, postLoadModules, setUpModules, TInteraction } from "./coreLib";
 import pc from "picocolors";
 
 export async function init(registerCommands = false) {
@@ -20,24 +20,31 @@ export async function init(registerCommands = false) {
   logger.verbose(`\n${pc.underline(pc.bold("Stage 2/5"))}\nInitialising Modules\n`);
   await setUpModules(__COMMAND_HANDLER);
 
-  //Set-up Client
+  //Set-up Client & Events
   logger.verbose(`\n${pc.underline(pc.bold("Stage 3/5"))}\nConfiguring Client\n`);
+  //Add some basic Client Events
   __client.once("ready", async () => {
     logger.info("Logged in");
+
+    //Run Post-Load
+    logger.verbose(`\n${pc.underline(pc.bold("Stage 5/5"))}\nRunning Post-Load\n`);
+    await postLoadModules();
   });
 
+  //TODO wait till PostLoad is finished before handling interactions
   __client.on(DiscordJS.Events.InteractionCreate, (interaction) => {
     void handleInteraction(interaction);
   });
+
+  //Register Commands if set.
   if (registerCommands) await __COMMAND_HANDLER.sync("all");
 
   //Load any Events
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 4/5"))}\nLoading Events\n`);
   //TODO, this
 
   //Login Client
-  logger.verbose(`\n${pc.underline(pc.bold("Stage 5/5"))}\nLogging in\n`);
-  void __client.login(__CONFIGURATION__.secrets.discordToken);
+  logger.verbose(`\n${pc.underline(pc.bold("Stage 4/5"))}\nLogging in\n`);
+  await __client.login(__CONFIGURATION__.secrets.discordToken);
 }
 
 async function handleInteraction(interaction: DiscordJS.Interaction<DiscordJS.CacheType>) {
