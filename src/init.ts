@@ -48,11 +48,10 @@ export async function init(registerCommands = false) {
 }
 
 async function handleInteraction(interaction: DiscordJS.Interaction<DiscordJS.CacheType>) {
-  logger.info(`<@${interaction.user.id}> (${interaction.user.username}) called interaction`);
-
   switch (interaction.type) {
     //Interaction is a Command... (Slash or ContextMenu)
     case DiscordAPI.InteractionType.ApplicationCommand: {
+      logger.info(`<@${interaction.user.id}> (${interaction.user.username}) called interaction`);
       //Slash Command
       logger.debug(`Received interaction: ${String(interaction)}`);
 
