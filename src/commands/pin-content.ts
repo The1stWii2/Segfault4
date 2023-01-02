@@ -18,8 +18,8 @@ interface IAssetEmbed {
 const foo =
   //HACK REMOVE THESE!
   [
-    { label: "Models & Textures", value: "1034441129975881759" },
-    { label: "Hammer & Misc", value: "959197193439440907" },
+    { label: "Models & Textures", value: "890411163777634317" },
+    { label: "Hammer & Misc", value: "906608941042106368" },
   ];
 
 class AssetEmbed {
