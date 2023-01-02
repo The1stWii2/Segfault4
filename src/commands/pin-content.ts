@@ -18,8 +18,8 @@ interface IAssetEmbed {
 const foo =
   //HACK REMOVE THESE!
   [
-    { label: "Models & Textures", value: "890411163777634317" },
-    { label: "Hammer & Misc", value: "906608941042106368" },
+    { label: "Models & Textures", value: "1034441129975881759" },
+    { label: "Hammer & Misc", value: "959197193439440907" },
   ];
 
 class AssetEmbed {
@@ -254,7 +254,7 @@ const PostAsset: ICommand = {
       if (collectInter.user != interaction.user) return;
 
       await (__client.channels.cache.get(embed.channelID) as DiscordJS.TextChannel).send({
-        embeds: [embed.generateEmbed()],
+        embeds: [embed.generateEmbed(true)],
       });
 
       await interaction.deleteReply();
