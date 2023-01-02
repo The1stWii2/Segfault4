@@ -238,9 +238,6 @@ const PostAsset: ICommand = {
         await interaction.editReply({
           embeds: [embed.validate() != 0 ? (embed.validate() as DiscordJS.EmbedBuilder) : embed.generateEmbed()],
           components: [...(embed.validate() == 0 ? [submitRow] : []), editRow, channelRow],
-          content: `**Only the user who initiated this interaction can interact.**
-    
-          Interaction expires after about 5 minutes`,
         });
       }
     });
