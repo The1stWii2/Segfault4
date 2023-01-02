@@ -84,9 +84,9 @@ features.
  ...Hopefully
 
  ## Fine. How can I help?
- Currently in-code documentation, however, it should be (cursed words)
- "self-explanatory". If you do need some assistance reading it, try contacting
- Wii2 on Discord (`Wii2#9999`), they might know.
+ Currently in-code documentation is lacking to say the least, however, it should
+ be  (cursed words) "self-explanatory". If you do need some assistance reading
+ it, try contacting  Wii2 on Discord (`Wii2#9999`), they might know.
 
  ----
 <br/>
