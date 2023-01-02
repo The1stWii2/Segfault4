@@ -18,7 +18,7 @@ interface IAssetEmbed {
 const foo =
   //HACK REMOVE THESE!
   [
-    { label: "Models & Textures", value: "906608941042106368" },
+    { label: "Models & Textures", value: "890411163777634317" },
     { label: "Hammer & Misc", value: "906608941042106368" },
   ];
 
@@ -250,10 +250,14 @@ const PostAsset: ICommand = {
       time: 5 * 60 * 1000,
     });
 
-    submitCollector.on("collect", (collectInter) => {
+    submitCollector.on("collect", async (collectInter) => {
       if (collectInter.user != interaction.user) return;
 
-      (__client.channels.cache.get(embed.channelID) as DiscordJS.TextChannel).send({ embeds: [embed.generateEmbed()] });
+      await (__client.channels.cache.get(embed.channelID) as DiscordJS.TextChannel).send({
+        embeds: [embed.generateEmbed()],
+      });
+
+      await interaction.deleteReply();
     });
   },
 };
