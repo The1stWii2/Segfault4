@@ -9,9 +9,7 @@ const roleStore: Record<string, ID[]> = {};
 
 const GiveRole: ICommand = {
   info: { name: "manage-roles", shortDescr: "Debug Slash Command" },
-  builder: new DiscordJS.SlashCommandBuilder()
-    .setName("manage-roles")
-    .setDescription("A dummy command used for debugging purposes."),
+  builder: new DiscordJS.SlashCommandBuilder().setName("manage-roles").setDescription("Manage your roles."),
   episode: async (interaction: DiscordJS.CommandInteraction) => {
     const interactionStart = Math.floor(Date.now() / 1000); //Discord uses Seconds instead of Milliseconds
     const interactionTimeout = interactionStart + 60; //1 Minute later
