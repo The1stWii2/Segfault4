@@ -123,7 +123,7 @@ const PostAsset: ICommand = {
   builder: new DiscordJS.SlashCommandBuilder()
     .setName("post-asset")
     .setDescription("This Command is subject to change!"),
-  episode: async (interaction: DiscordJS.ContextMenuCommandInteraction) => {
+  episode: async (interaction: DiscordJS.CommandInteraction) => {
     const submitButton = new DiscordJS.ButtonBuilder()
       .setCustomId("submit")
       .setLabel("All good!")
@@ -177,7 +177,7 @@ const PostAsset: ICommand = {
 
       //Check if updating field or channel
       if (collectInter.values[0] == foo[0].value || collectInter.values[0] == foo[1].value) {
-        embed.channelID = collectInter.values[0];
+        embed.channelID = collectInter.values[0] as `${number}`;
 
         await collectInter.update({
           embeds: [embed.validate() != 0 ? (embed.validate() as DiscordJS.EmbedBuilder) : embed.generateEmbed()],
