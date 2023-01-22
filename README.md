@@ -66,24 +66,20 @@ features.
  - **Flag Content** – A Module that'll allow users to flag messages or users,
  so they can discretely notify admin.
  - **Give Role** – A Module that'll allow server admin to add "Role React"
- messages, Commands, and perhaps other methods.
- - **Pin Message** – A Module to allow allowed users to post embeds to
- predetermined channels.
-
+ messages, ~~Commands~~ (added!), and perhaps other methods.
+ - ~~**Pin Message** – A Module to allow allowed users to post embeds to
+ predetermined channels.~~ (added!)
 
 
  ## Hold on, if that's the _planned_ stuff, what's actually included?
- Er... A dummy `debug` command that doesn't do anything, a command that performs
- a soft reset, but is disabled, and a command that just links 2 channels
- together.
-
-
-
+ We've got a command that links two channels, a command that gives roles, and
+ a few other things in the works!
+ 
  ## That's it?
  Well, it shouldn't be _too_ hard to do the rest now!<br/>
  ...Hopefully
 
- ## Fine. How can I help?
+ ## Well, how can I help?
  Currently in-code documentation is lacking to say the least, however, it should
  be  (cursed words) "self-explanatory". If you do need some assistance reading
  it, try contacting  Wii2 on Discord (`Wii2#9999`), they might know.
