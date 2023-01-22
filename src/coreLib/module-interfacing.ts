@@ -14,7 +14,7 @@ interface ICommandLoader {
   default: IModule;
 }
 
-export async function loadModule(filepath: FilePath) {
+export function loadModule(filepath: FilePath) {
   try {
     const { default: module } = importFresh<ICommandLoader>(filepath);
 
@@ -44,7 +44,7 @@ export async function loadModule(filepath: FilePath) {
   }
 }
 
-export async function loadAllModules() {
+export function loadAllModules() {
   logger.info("Importing Modules...");
   const startTime = performance.now();
 
@@ -58,14 +58,14 @@ export async function loadAllModules() {
     const files = fs.readdirSync(dir).filter((item) => item.endsWith(".ts"));
     for (const file of files) {
       logger.verbose(`Loading Module "${file}"`);
-      await loadModule(path.join(dir, file));
+      loadModule(path.join(dir, file));
     }
   }
 
   logger.info(`Completed loading Modules. Took ${(performance.now() - startTime).toPrecision(4)}ms`);
 }
 
-export async function initialiseModules() {
+export function initialiseModules() {
   //Run any Init functions
   for (const moduleName in __LOADED_MODULES) {
     if (typeof __LOADED_MODULES[moduleName].init === "function") {
@@ -78,7 +78,7 @@ export async function initialiseModules() {
   }
 }
 
-export async function loadGuildStoreModules() {
+export function loadGuildStoreModules() {
   //Load Guild configs
   const files = fs
     .readdirSync(__CONFIGURATION__.filepaths.storageLocation)
@@ -100,7 +100,7 @@ export async function loadGuildStoreModules() {
   }
 }
 
-export async function postLoadModules() {
+export function postLoadModules() {
   //Run any Post Init functions
   for (const moduleName in __LOADED_MODULES) {
     if (typeof __LOADED_MODULES[moduleName].postLoad === "function") {
@@ -113,8 +113,8 @@ export async function postLoadModules() {
   }
 }
 
-export async function setUpModules(commandHandler: CommandHandler) {
+export function setUpModules(commandHandler: CommandHandler) {
   commandHandler.clear();
-  await initialiseModules();
-  await loadGuildStoreModules();
+  initialiseModules();
+  loadGuildStoreModules();
 }

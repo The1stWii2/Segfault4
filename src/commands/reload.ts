@@ -9,12 +9,20 @@ const ReloadModules: ICommand = {
   info: { name: "Reload Modules", shortDescr: "Rescan directories and reload Modules" },
   builder: new DiscordJS.SlashCommandBuilder()
     .setName("reload-modules")
-    .setDescription("Rescan directories and reload Modules"),
+    .setDescription("Rescan directories and reload Modules")
+    .addBooleanOption((option) =>
+      option.setName("resync").setDescription("Resynchronise commands with Discord").setRequired(false)
+    ),
   episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
     try {
       await loadAllModules();
       await setUpModules(__COMMAND_HANDLER);
       await postLoadModules();
+
+      if (interaction.options.getBoolean("resync")) {
+        await __COMMAND_HANDLER.sync("all");
+      }
+
       await interaction.reply({ ephemeral: true, content: "Done!" });
     } catch (err) {
       console.error(err);

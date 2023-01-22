@@ -51,6 +51,7 @@ async function handleInteraction(interaction: DiscordJS.Interaction<DiscordJS.Ca
   switch (interaction.type) {
     //Interaction is a Command... (Slash or ContextMenu)
     case DiscordAPI.InteractionType.ApplicationCommand: {
+      logger.info(`<@${interaction.user.id}> (${interaction.user.username}) called interaction`);
       //Slash Command
       logger.debug(`Received interaction: ${String(interaction)}`);
 
