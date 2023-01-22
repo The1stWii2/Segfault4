@@ -116,14 +116,3 @@ highlighter`) for **VSCode**.
 
 6. Run `yarn ts-node -R` to start Segfault. It should run first-time set up
 things (the `-R` forces the bot to sync commands with Discord).
-
-
-
-## What's `package.json5`?
-An attempt to provide a better dependency solution than just `package.json`.
-Unfortunately, Yarn does not natively support JSON5 (and I forgot to consider
-pnpm which does), so a somewhat hack solution has to be implemented
-(`yarn install-package`). **Note:** this, unsurprisingly, does not work with
-`yarn add` or `yarn remove`. If you change the dependencies in some way, please
-remember to update `package.json5` (and if you're feeling particularly nice, 
-maybe even include some comments about why or where packages are used).
