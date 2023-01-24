@@ -117,7 +117,7 @@ async function generateUserEmbed(member: DiscordJS.GuildMember) {
   if (activity) {
     embed.addFields({
       name: "Custom Status:",
-      value: `${activity.emoji!.toString()} ${activity.state!}`,
+      value: `${activity.emoji ? activity.emoji.toString() + " " : ""}${activity.state ? activity.state : ""}`,
       inline: true,
     });
   }
