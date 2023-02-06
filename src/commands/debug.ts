@@ -10,7 +10,7 @@ const ReloadCommands: ICommand = {
   builder: new DiscordJS.SlashCommandBuilder()
     .setName("debug")
     .setDescription("A dummy command used for debugging purposes."),
-  episode: async (interaction: DiscordJS.ContextMenuCommandInteraction) => {
+  episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
     console.debug(__LOADED_MODULES);
     console.debug(__COMMAND_HANDLER);
   },

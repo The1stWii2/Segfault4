@@ -14,21 +14,22 @@ import pc from "picocolors";
 export async function init(registerCommands = false) {
   //Load Modules
   logger.verbose(`\n${pc.underline(pc.bold("Stage 1/5"))}\nLoading Modules\n`);
-  await loadAllModules();
+  loadAllModules();
 
   //Initialise Modules
   logger.verbose(`\n${pc.underline(pc.bold("Stage 2/5"))}\nInitialising Modules\n`);
-  await setUpModules(__COMMAND_HANDLER);
+  setUpModules(__COMMAND_HANDLER);
 
   //Set-up Client & Events
   logger.verbose(`\n${pc.underline(pc.bold("Stage 3/5"))}\nConfiguring Client\n`);
   //Add some basic Client Events
-  __client.once("ready", async () => {
+  __client.once("ready", () => {
     logger.info("Logged in");
 
     //Run Post-Load
     logger.verbose(`\n${pc.underline(pc.bold("Stage 5/5"))}\nRunning Post-Load\n`);
-    await postLoadModules();
+    postLoadModules();
+    logger.verbose(`\n${pc.underline(pc.bold("Finished!"))}\nReady to go\n`);
   });
 
   //TODO wait till PostLoad is finished before handling interactions

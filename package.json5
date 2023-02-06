@@ -20,8 +20,7 @@
     'discord.js': '^14.7.1',
     'import-fresh': '^3.3.0', //Used for Module loading
     json5: '^2.2.2',
-    'mathjax-full': '^3.2.2',
-    //Maths rendering
+    'mathjax-full': '^3.2.2', //Maths rendering
     picocolors: '^1.0.0',
     sharp: '^0.31.3', //Image Conversion
     src: 'link:./src',

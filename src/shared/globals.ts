@@ -4,6 +4,8 @@ import { loadJSON5 } from "../common/load-JSON5";
 import { ICommand, IModule } from "../coreLib";
 
 import { CommandHandler } from "../coreLib/command-definitions";
+import { EventHandler } from "../coreLib/event-definitions";
+import { __client } from "./client";
 
 /**
  * This is split into categories.
@@ -46,3 +48,5 @@ export const __LOADED_MODULES: Record<string, IModule> = {};
 export const __GUILD_MODULES: Record<DiscordJS.Snowflake, string[]> = {};
 
 export const __COMMAND_HANDLER = new CommandHandler(__CONFIGURATION__.secrets.applicationID, __REST);
+
+export const __EVENT_HANDLER = new EventHandler(__client);
