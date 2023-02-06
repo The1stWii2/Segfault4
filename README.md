@@ -90,7 +90,7 @@ features.
 # Dev things
 
 ## Project Info
-TypeScript with Yarn as package manager.
+TypeScript with pnpm as package manager.
 Programmed in VSCode with Prettier, ESLint, & TSLint.
 Runs directly in TS-Node.
 
