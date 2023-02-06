@@ -102,13 +102,12 @@ Runs directly in TS-Node.
 2. Install **ESLint** & **Prettier** (and optionally a`JSON5 syntax
 highlighter`) for **VSCode**.
 
-3. Run `yarn` in directory. This should set up Yarn.
+3. Run `pnpm` in directory. This should set up pnpm.
 
-4. Run `yarn install-package` to pull all dependencies (You should _not_ have a
-`node_modules` folder).
+4. Run `pnpm install` to pull all dependencies.
 
 5. Open `config.json5.example` and, well, configure it. Resave it as
 `config.json5`.
 
-6. Run `yarn ts-node -R` to start Segfault. It should run first-time set up
+6. Run `pnpm ts-node -R` to start Segfault. It should run first-time set up
 things (the `-R` forces the bot to sync commands with Discord).
