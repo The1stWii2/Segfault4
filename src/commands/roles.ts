@@ -5,10 +5,12 @@ import { __client } from "../shared/client";
 import { ICommand, IModule, loadAllModules } from "../coreLib";
 import { __COMMAND_HANDLER, __LOADED_MODULES } from "../shared/globals";
 
-const roleStore: Record<string, ID[]> = {};
+const roleToggleStore: Record<string, ID[]> = {};
+const roleAddStore: Record<string, ID[]> = {};
+const roleRemoveStore: Record<string, ID[]> = {};
 
 const GiveRole: ICommand = {
-  info: { name: "manage-roles", shortDescr: "Debug Slash Command" },
+  info: { name: "manage-roles", shortDescr: "Command that manages user roles" },
   builder: new DiscordJS.SlashCommandBuilder().setName("manage-roles").setDescription("Manage your roles."),
   episode: async (interaction: DiscordJS.CommandInteraction) => {
     const interactionStart = Math.floor(Date.now() / 1000); //Discord uses Seconds instead of Milliseconds
@@ -85,34 +87,48 @@ function generateEmbed(interaction: DiscordJS.CommandInteraction, timestamp: num
   const userRoles = Array.from((interaction.member! as DiscordJS.GuildMember).roles.cache.keys());
 
   //Get all roles that can be added.
-  const userRolesNotAdded = roleStore[interaction.guildId!].filter((item) => !userRoles.includes(item));
+  const userRolesCanAdd = roleToggleStore[interaction.guildId!].filter((item) => !userRoles.includes(item));
+  const userRolesCanAddOnce = roleAddStore[interaction.guildId!].filter((item) => !userRoles.includes(item));
 
   //Get all roles that can be removed.
-  const userRolesAdded = roleStore[interaction.guildId!].filter((item) => userRoles.includes(item));
+  const userRolesCanRemove = roleToggleStore[interaction.guildId!].filter((item) => userRoles.includes(item));
+  const userRolesCanRemoveOnce = roleRemoveStore[interaction.guildId!].filter((item) => userRoles.includes(item));
 
   const embedFields = [];
 
-  if (userRolesNotAdded.length > 0) {
+  if (userRolesCanAdd.length + userRolesCanAddOnce.length > 0) {
     const inactiveRoles: DiscordJS.APIEmbedField = { name: "**Inactive Roles**", value: "" };
-    for (const roleID of userRolesNotAdded) {
+    for (const roleID of userRolesCanAdd) {
       const role = interaction.guild!.roles.cache.get(roleID)!;
 
       inactiveRoles.value += role.name + "\n";
     }
+    for (const roleID of userRolesCanAddOnce) {
+      const role = interaction.guild!.roles.cache.get(roleID)!;
+
+      inactiveRoles.value += role.name + " `(This role cannot be removed if added)`" + "\n";
+    }
     embedFields.push(inactiveRoles);
+    embedFields.push({ name: "\u200B", value: "\u200B" });
   }
 
-  if (userRolesAdded.length > 0) {
+  if (userRolesCanRemove.length + userRolesCanRemoveOnce.length > 0) {
     const activeRoles: DiscordJS.APIEmbedField = { name: "**Active Roles**", value: "" };
-    for (const roleID of userRolesAdded) {
+    for (const roleID of userRolesCanRemove) {
       const role = interaction.guild!.roles.cache.get(roleID)!;
 
       activeRoles.value += role.name + "\n";
     }
+    for (const roleID of userRolesCanRemoveOnce) {
+      const role = interaction.guild!.roles.cache.get(roleID)!;
+
+      activeRoles.value += role.name + " `(This role cannot be readded if removed)`" + "\n";
+    }
     embedFields.push(activeRoles);
+    embedFields.push({ name: "\u200B", value: "\u200B" });
   }
 
-  embedFields.push({ name: "\u200B", value: "\u200B" }, { name: "Interaction expires", value: `<t:${timestamp}:R>` });
+  embedFields.push({ name: "Interaction expires", value: `<t:${timestamp}:R>` });
 
   const embed = new DiscordJS.EmbedBuilder()
     .setColor(interaction.user.accentColor ? interaction.user.accentColor : "#5865f2")
@@ -127,18 +143,25 @@ function generateDropDowns(interaction: DiscordJS.CommandInteraction) {
   const userRoles = Array.from((interaction.member! as DiscordJS.GuildMember).roles.cache.keys());
 
   //Get all roles that can be added.
-  const userRolesNotAdded = roleStore[interaction.guildId!].filter((item) => !userRoles.includes(item));
+  const userRolesCanAdd = roleToggleStore[interaction.guildId!].filter((item) => !userRoles.includes(item));
+  const userRolesCanAddOnce = roleAddStore[interaction.guildId!].filter((item) => !userRoles.includes(item));
 
   //Get all roles that can be removed.
-  const userRolesAdded = roleStore[interaction.guildId!].filter((item) => userRoles.includes(item));
+  const userRolesCanRemove = roleToggleStore[interaction.guildId!].filter((item) => userRoles.includes(item));
+  const userRolesCanRemoveOnce = roleRemoveStore[interaction.guildId!].filter((item) => userRoles.includes(item));
 
   //Add Role Dropdown
-  if (userRolesNotAdded.length > 0) {
+  if (userRolesCanAdd.length + userRolesCanAddOnce.length > 0) {
     const rolesCanAdd: DiscordJS.SelectMenuComponentOptionData[] = [];
-    for (const roleID of userRolesNotAdded) {
+    for (const roleID of userRolesCanAdd) {
       const role = interaction.guild!.roles.cache.get(roleID)!;
 
       rolesCanAdd.push({ label: role.name, value: roleID });
+    }
+    for (const roleID of userRolesCanAddOnce) {
+      const role = interaction.guild!.roles.cache.get(roleID)!;
+
+      rolesCanAdd.push({ label: role.name + " (This role cannot be removed if added)", value: roleID });
     }
 
     const roleAddSelect = new DiscordJS.StringSelectMenuBuilder()
@@ -151,12 +174,17 @@ function generateDropDowns(interaction: DiscordJS.CommandInteraction) {
   }
 
   //Remove Role Dropdown
-  if (userRolesAdded.length > 0) {
+  if (userRolesCanRemove.length + userRolesCanRemoveOnce.length > 0) {
     const rolesCanRemove: DiscordJS.SelectMenuComponentOptionData[] = [];
-    for (const roleID of userRolesAdded) {
+    for (const roleID of userRolesCanRemove) {
       const role = interaction.guild!.roles.cache.get(roleID)!;
 
       rolesCanRemove.push({ label: role.name, value: roleID });
+    }
+    for (const roleID of userRolesCanRemoveOnce) {
+      const role = interaction.guild!.roles.cache.get(roleID)!;
+
+      rolesCanRemove.push({ label: role.name + " (This role cannot be readded if removed)", value: roleID });
     }
 
     const RoleRemoveSelect = new DiscordJS.StringSelectMenuBuilder()
@@ -173,14 +201,18 @@ function generateDropDowns(interaction: DiscordJS.CommandInteraction) {
   return output;
 }
 
-const Roles: IModule = {
+const Roles: IModule<JSONValue, { toggle?: ID[]; addOnly?: ID[]; removeOnly?: ID[] }> = {
   tags: ["basic"],
   info: { name: "Roles", shortDescr: "Debug tools" },
   init: () => {
     __COMMAND_HANDLER.addCommandGlobal(GiveRole, "Roles");
   },
   guildLoad: (guildID, store) => {
-    roleStore[guildID] = store as ID[];
+    if (store) {
+      roleToggleStore[guildID] = store.toggle ?? [];
+      roleAddStore[guildID] = store.addOnly ?? [];
+      roleRemoveStore[guildID] = store.removeOnly ?? [];
+    }
   },
   postLoad: (store) => {
     //
