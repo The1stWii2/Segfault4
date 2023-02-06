@@ -90,7 +90,9 @@ export class CommandHandler {
       body: commandList,
     })
       .then(() => logger.info("Successfully registered global commands."))
-      .catch((err) => logger.error(String(err)));
+      .catch((err) => {
+        throw err;
+      });
   }
 }
 
