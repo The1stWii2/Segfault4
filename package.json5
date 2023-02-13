@@ -16,28 +16,28 @@
     '@types/mathjax': '^0.0.37',
     '@types/sharp': '^0.31.1',
     dayjs: '^1.11.7', //DayJS is just used for formatting dates for Winston
-    'discord-api-types': '^0.37.24',
+    'discord-api-types': '^0.37.33',
     'discord.js': '^14.7.1',
     'import-fresh': '^3.3.0', //Used for Module loading
-    json5: '^2.2.2',
+    json5: '^2.2.3',
     'mathjax-full': '^3.2.2', //Maths rendering
     picocolors: '^1.0.0',
     sharp: '^0.31.3', //Image Conversion
-    src: 'link:./src',
+    src: 'link:src',
     'ts-node': '^10.9.1',
-    typescript: '^4.9.4',
+    typescript: '^4.9.5',
     winston: '^3.8.2',
   },
   devDependencies: {
     //Types
-    '@types/node': '^18.11.18',
+    '@types/node': '^18.13.0',
     '@types/node-dir': '^0.0.34',
     //Eslint
-    '@typescript-eslint/eslint-plugin': '^5.47.1',
-    '@typescript-eslint/parser': '^5.47.1',
-    eslint: '^8.30.0',
-    'eslint-config-prettier': '^8.5.0',
-    //Prettier
-    prettier: '^2.8.1',
+    '@typescript-eslint/eslint-plugin': '^5.51.0',
+    '@typescript-eslint/parser': '^5.51.0',
+    eslint: '^8.34.0',
+    'eslint-config-prettier': '^8.6.0',
+    prettier: '^2.8.4',
   },
 }
+//Prettier /* [comment possibly relocated by pnpm] */
