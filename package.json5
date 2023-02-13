@@ -4,11 +4,6 @@
   scripts: {
     'ts-node': 'ts-node ./src/segfault.ts',
     'ts-node-reload': 'ts-node ./src/segfault.ts -R',
-    //Run install-package
-    //Convert from JSON5 to JSON
-    'convert-package': 'json5 ./package.json5 -s 2 -o ./package.json',
-    //Install (not needed now due to pnpm)
-    'install-package': 'yarn convert-package && yarn install',
   },
   dependencies: {
     '@discordjs/builders': '^1.4.0',
@@ -40,4 +35,3 @@
     prettier: '^2.8.4',
   },
 }
-//Prettier /* [comment possibly relocated by pnpm] */
