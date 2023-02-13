@@ -16,7 +16,7 @@ const SegInfo: ICommand = {
       .setImage("https://media.discordapp.net/attachments/588736222415814660/1058426064868753558/segfault.png")
       .setFooter({ text: "Version: 4.2.0α" });
 
-    await interaction.reply({ ephemeral: true, embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
   },
 };
 
@@ -162,22 +162,23 @@ async function generateUserEmbed(member: DiscordJS.GuildMember) {
   return embed;
 }
 
-async function UserInfoFunction(
-  interaction: DiscordJS.UserContextMenuCommandInteraction | DiscordJS.ChatInputCommandInteraction
-) {
-  let targetUser;
-
-  //@ts-expect-error Perform basic check to figure out shape.
-  if (interaction.targetId) {
-    targetUser = (interaction as DiscordJS.UserContextMenuCommandInteraction).targetId;
-  } else {
-    //Lazily get ID, we'll being tuning this back into a User object in a minute, but for consistency, let's just have the ID.
-    targetUser = (interaction as DiscordJS.ChatInputCommandInteraction).options.getUser("user")!.id;
-  }
+async function UserInfoContextEpisode(interaction: DiscordJS.UserContextMenuCommandInteraction) {
+  const targetUser = interaction.targetId;
 
   const embed = await generateUserEmbed(await interaction.guild!.members.fetch(targetUser));
 
   await interaction.reply({ embeds: [embed], ephemeral: true });
+}
+
+async function UserInfoSlashEpisode(interaction: DiscordJS.ChatInputCommandInteraction) {
+  const ephemeral = interaction.options.getBoolean("hide") ?? false;
+
+  await interaction.deferReply({ ephemeral: ephemeral });
+
+  const targetUser = interaction.options.getUser("user")!.id;
+  const embed = await generateUserEmbed(await interaction.guild!.members.fetch(targetUser));
+
+  await interaction.editReply({ embeds: [embed] });
 }
 
 const UserInfoContext: ICommand = {
@@ -185,7 +186,7 @@ const UserInfoContext: ICommand = {
   builder: new DiscordJS.ContextMenuCommandBuilder()
     .setName("user-info")
     .setType(DiscordJS.ApplicationCommandType.User),
-  episode: UserInfoFunction,
+  episode: UserInfoContextEpisode,
 };
 
 const UserInfoSlash: ICommand = {
@@ -193,10 +194,9 @@ const UserInfoSlash: ICommand = {
   builder: new DiscordJS.SlashCommandBuilder()
     .setName("user-info")
     .setDescription("Displays information about user")
-    .addUserOption((option) =>
-      option.setName("user").setDescription("User to get information from.").setRequired(true)
-    ),
-  episode: UserInfoFunction,
+    .addUserOption((option) => option.setName("user").setDescription("User to get information from.").setRequired(true))
+    .addBooleanOption((option) => option.setName("hide").setDescription("Only show result to you.").setRequired(false)),
+  episode: UserInfoSlashEpisode,
 };
 
 const Module: IModule = {
@@ -205,9 +205,9 @@ const Module: IModule = {
   init: () => {
     __COMMAND_HANDLER.addCommandGlobal(SegInfo, "Info");
 
-    __COMMAND_HANDLER.addCommandGlobal(UserInfoContext, UserInfoContext.info.name);
+    __COMMAND_HANDLER.addCommandGlobal(UserInfoContext, "Info");
 
-    __COMMAND_HANDLER.addCommandGlobal(UserInfoSlash, UserInfoSlash.info.name);
+    __COMMAND_HANDLER.addCommandGlobal(UserInfoSlash, "Info");
   },
 };
 

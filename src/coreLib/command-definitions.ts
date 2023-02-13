@@ -22,24 +22,36 @@ interface ICommandStoreItem {
 }
 
 export class CommandHandler {
-  private commandStore: ICommandStoreItem[];
+  private commandStore: { [key in DiscordJS.ApplicationCommandType]: Record<string, ICommandStoreItem> };
   private appID: ID;
   private REST: DiscordJS.REST;
 
   constructor(appID: ID, REST: DiscordJS.REST) {
-    this.commandStore = [];
+    this.commandStore = { 1: {}, 2: {}, 3: {} };
     this.appID = appID;
     this.REST = REST;
   }
 
-  addCommand(command: ICommand, moduleName: string, guilds: DiscordJS.Snowflake[]) {
+  addCommand(command: ICommand, moduleName: string, guilds?: DiscordJS.Snowflake[]) {
     //TODO: Combine identical Commands, with different guilds
-    this.commandStore.push({ command: command, moduleName: moduleName, guilds: guilds });
+    //Also, overhaul this real crappy logic
+    if (command.builder instanceof DiscordJS.SlashCommandBuilder) {
+      if (this.commandStore[1][command.builder.name]) throw new CoreLibError("Command already exists with name!");
+      else this.commandStore[1][command.builder.name] = { command: command, moduleName: moduleName, guilds: guilds };
+    } else if ((command.builder as DiscordJS.ContextMenuCommandBuilder).type == DiscordJS.ApplicationCommandType.User) {
+      if (this.commandStore[2][command.builder.name]) throw new CoreLibError("Command already exists with name!");
+      else this.commandStore[2][command.builder.name] = { command: command, moduleName: moduleName, guilds: guilds };
+    } else if (
+      (command.builder as DiscordJS.ContextMenuCommandBuilder).type == DiscordJS.ApplicationCommandType.Message
+    ) {
+      if (this.commandStore[3][command.builder.name]) throw new CoreLibError("Command already exists with name!");
+      else this.commandStore[3][command.builder.name] = { command: command, moduleName: moduleName, guilds: guilds };
+    }
   }
 
+  //TODO: Redo function
   addCommandGlobal(command: ICommand, moduleName: string) {
-    //TODO: Combine identical Commands, with different guilds
-    this.commandStore.push({ command: command, moduleName: moduleName });
+    this.addCommand(command, moduleName);
   }
 
   removeCommand(commandName: string, guilds?: DiscordJS.Snowflake[] | "all") {
@@ -47,30 +59,32 @@ export class CommandHandler {
   }
 
   removeCommandByModule(moduleName: string) {
-    let index = -2;
-    do {
-      index = this.commandStore.findIndex((element) => element.moduleName == moduleName);
-      if (index >= 0) this.commandStore.splice(index, 1);
-    } while (index >= 0);
+    //TODO: Implement
   }
 
   clear() {
-    this.commandStore = [];
+    this.commandStore = { 1: {}, 2: {}, 3: {} };
     logger.debug("Command Store cleared");
   }
 
   async call(interaction: TInteraction, commandName: string, guild?: string | "global") {
-    for (const command of this.commandStore) {
+    const commandType = interaction.commandType as 1 | 2 | 3;
+    for (const command in this.commandStore[commandType]) {
       //TODO: Awful comparison
       if (
-        command.command.builder.name == commandName &&
-        (((guild == "global" || guild == undefined) && (command.guilds === undefined || command.guilds.length === 0)) ||
-          (command.guilds && guild && command.guilds.includes(guild)))
+        this.commandStore[commandType][commandName].command.builder.name == commandName &&
+        (((guild == "global" || guild == undefined) &&
+          (this.commandStore[commandType][commandName].guilds === undefined ||
+            this.commandStore[commandType][commandName].guilds!.length === 0)) ||
+          (this.commandStore[commandType][commandName].guilds &&
+            guild &&
+            this.commandStore[commandType][commandName].guilds!.includes(guild)))
       ) {
-        await command.command.episode(interaction);
+        await this.commandStore[commandType][commandName].command.episode(interaction);
         return;
       }
     }
+
     if (guild == "global" || guild === undefined)
       throw new InvalidCommand(`Command "${commandName}" does not exist globally`);
     else throw new InvalidCommand(`Command "${commandName}" does not exist in Guild "${guild}"`);
@@ -80,9 +94,14 @@ export class CommandHandler {
     const commandList: TBuilder[] = [];
 
     //TODO: Populate this with the actual correct items to populate
-    for (const command of this.commandStore) {
-      if (command.guilds === undefined || command.guilds.length === 0) {
-        commandList.push(command.command.builder);
+    for (let commandType = 1; commandType < 3; commandType++) {
+      for (const commandName in this.commandStore[commandType as 1 | 2 | 3]) {
+        if (
+          this.commandStore[commandType as 1 | 2 | 3][commandName].guilds === undefined ||
+          this.commandStore[commandType as 1 | 2 | 3][commandName].guilds!.length === 0
+        ) {
+          commandList.push(this.commandStore[commandType as 1 | 2 | 3][commandName].command.builder);
+        }
       }
     }
 
@@ -96,9 +115,9 @@ export class CommandHandler {
   }
 }
 
-export type TInteraction = DiscordJS.ContextMenuCommandInteraction & DiscordJS.ChatInputCommandInteraction;
+export type TInteraction = DiscordJS.CommandInteraction;
 
-export type TEpisode = (interaction: TInteraction) => Promise<void>;
+export type TEpisode = (interaction: any) => Promise<void>;
 
 class CoreLibError extends Error {
   constructor(message: string) {

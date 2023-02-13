@@ -10,18 +10,25 @@ const roleAddStore: Record<string, ID[]> = {};
 const roleRemoveStore: Record<string, ID[]> = {};
 
 const GiveRole: ICommand = {
-  info: { name: "manage-roles", shortDescr: "Command that manages user roles" },
-  builder: new DiscordJS.SlashCommandBuilder().setName("manage-roles").setDescription("Manage your roles."),
-  episode: async (interaction: DiscordJS.CommandInteraction) => {
+  info: { name: "Manage Roles", shortDescr: "Command that manages user roles" },
+  builder: new DiscordJS.SlashCommandBuilder()
+    .setName("manage-roles")
+    .setDescription("Manage your roles.")
+    .addBooleanOption((option) => option.setName("hide").setDescription("Only show result to you.").setRequired(false)),
+  episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
     const interactionStart = Math.floor(Date.now() / 1000); //Discord uses Seconds instead of Milliseconds
     const interactionTimeout = interactionStart + 60; //1 Minute later
+    const ephemeral = interaction.options.getBoolean("hide") ?? false;
 
     setTimeout(() => {
-      void interaction.deleteReply();
+      if (ephemeral) void interaction.deleteReply();
+      else {
+        void interaction.editReply({ components: [] });
+      }
     }, 60 * 1000); //Once interaction expires, delete the message.
 
     const message = await interaction.reply({
-      ephemeral: true,
+      ephemeral: ephemeral,
       components: generateDropDowns(interaction),
       embeds: [generateEmbed(interaction, interactionTimeout)],
     });

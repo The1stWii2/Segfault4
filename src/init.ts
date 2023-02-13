@@ -52,12 +52,10 @@ async function handleInteraction(interaction: DiscordJS.Interaction<DiscordJS.Ca
   switch (interaction.type) {
     //Interaction is a Command... (Slash or ContextMenu)
     case DiscordAPI.InteractionType.ApplicationCommand: {
-      logger.info(`<@${interaction.user.id}> (${interaction.user.username}) called interaction`);
-      //Slash Command
-      logger.debug(`Received interaction: ${String(interaction)}`);
+      logger.info(`<@${interaction.user.id}> (${interaction.user.username}) called ${String(interaction.commandName)}`);
 
       try {
-        await __COMMAND_HANDLER.call(interaction as TInteraction, interaction.commandName);
+        await __COMMAND_HANDLER.call(interaction, interaction.commandName);
       } catch (err) {
         logger.error(err);
 

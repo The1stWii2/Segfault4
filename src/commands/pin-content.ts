@@ -122,8 +122,17 @@ const PostAsset: ICommand = {
   info: { name: "Post Asset", shortDescr: "foobar" },
   builder: new DiscordJS.SlashCommandBuilder()
     .setName("post-asset")
-    .setDescription("This Command is subject to change!"),
-  episode: async (interaction: DiscordJS.CommandInteraction) => {
+    .setDescription("Post an asset to a channel (This command is subject to change!)")
+    .addBooleanOption((option) => option.setName("hide").setDescription("Only show result to you.").setRequired(false)),
+  episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
+    const interactionStart = Math.floor(Date.now() / 1000); //Discord uses Seconds instead of Milliseconds
+    const interactionTimeout = interactionStart + 60 * 5; //5 Minute later
+    const ephemeral = interaction.options.getBoolean("hide") ?? false;
+
+    setTimeout(() => {
+      void interaction.deleteReply();
+    }, 60 * 1000 * 5); //Once interaction expires, delete the message.
+
     const submitButton = new DiscordJS.ButtonBuilder()
       .setCustomId("submit")
       .setLabel("All good!")
@@ -158,9 +167,8 @@ const PostAsset: ICommand = {
     const message = await interaction.reply({
       embeds: [embed.validate() != 0 ? (embed.validate() as DiscordJS.EmbedBuilder) : embed.generateEmbed()],
       components: [...(embed.validate() == 0 ? [submitRow] : []), editRow, channelRow],
-      content: `**Only the user who initiated this interaction can interact.**
-
-      Interaction expires after about 5 minutes`,
+      ephemeral: ephemeral,
+      content: `Interaction expires <t:${interactionTimeout}:R>`,
     });
 
     const editCollector = message.createMessageComponentCollector({
