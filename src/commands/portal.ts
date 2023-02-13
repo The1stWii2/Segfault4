@@ -60,7 +60,7 @@ const ReloadCommands: ICommand = {
     }
     let exitMessage;
     try {
-      exitMessage = await (channelResp.channel as DiscordJS.TextBasedChannel).send(emojis.entry.toString());
+      exitMessage = await (channelResp.channel as DiscordJS.TextBasedChannel).send(emojis.exit.toString());
     } catch (err) {
       console.error(err);
       await interaction.reply({ ephemeral: true, content: "I am unable to post to that channel!" });
@@ -84,7 +84,7 @@ const ReloadCommands: ICommand = {
         .setURL(reply.url)
     );
 
-    await interaction.editReply({ content: emojis.exit.toString(), components: [entryButton] });
+    await interaction.editReply({ content: emojis.entry.toString(), components: [entryButton] });
 
     await exitMessage.edit({ components: [exitButton] });
   },
