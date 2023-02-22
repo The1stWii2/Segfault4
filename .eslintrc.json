@@ -14,7 +14,8 @@
     "@typescript-eslint/require-await": "warn",
     "@typescript-eslint/no-non-null-assertion": "off",    
     "no-constant-condition": ["error", { "checkLoops": false }],
-    "no-control-regex": "off"
+    "no-control-regex": "off",    
+    "no-inner-declarations": "off"
   },
   "overrides": [
   ],
