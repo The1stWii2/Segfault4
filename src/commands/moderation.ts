@@ -157,6 +157,8 @@ const modLog: ICommand = {
       case "new-entry": {
         const guildMember = await interaction.guild?.members.fetch(user);
 
+        await interaction.deferReply({ ephemeral: true });
+
         if (!store.modlog[user.id]) {
           store.modlog[user.id] = [];
         }
@@ -223,7 +225,7 @@ const modLog: ICommand = {
             : [],
         });
 
-        await interaction.reply({ ephemeral: true, content: "Filed." });
+        await interaction.editReply({ content: "Filed." });
 
         break;
       }
