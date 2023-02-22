@@ -20,14 +20,17 @@ const GiveRole: ICommand = {
     const interactionTimeout = interactionStart + 60; //1 Minute later
     const ephemeral = interaction.options.getBoolean("hide") ?? false;
 
+    let content = ephemeral ? "" : "(Only the user who called this interaction can use it)\n";
+
     setTimeout(() => {
       if (ephemeral) void interaction.deleteReply();
       else {
-        void interaction.editReply({ components: [] });
+        void interaction.editReply({ components: [], embeds: [] });
       }
     }, 60 * 1000); //Once interaction expires, delete the message.
 
     const message = await interaction.reply({
+      content: content,
       ephemeral: ephemeral,
       components: generateDropDowns(interaction),
       embeds: [generateEmbed(interaction, interactionTimeout)],
@@ -41,21 +44,34 @@ const GiveRole: ICommand = {
     });
 
     addCollector.on("collect", async (collectedInter) => {
+      if (interaction.user != collectedInter.user) {
+        void collectedInter.deferUpdate();
+        return;
+      }
+
       await (interaction.member! as DiscordJS.GuildMember).roles.add(collectedInter.values);
 
       //Update to avoid stale cache
       await (interaction.member! as DiscordJS.GuildMember).fetch(true);
+
+      const roleNames: string[] = [];
 
       //The Remove method simply puts in a request to update the user roles, it doesn't actually wait for it to happen.
       //The only real way to know would be to hook into the Audit Log, but I haven't done the logic needed for that,
       //and this is only a stop-gap implementation anyway.
       //So instead, just wait a second. Should be good for the majority of situations.
       setTimeout(() => {
+        content += `\n**Added:** ${roleNames.join(", ")}`;
         void interaction.editReply({
+          content: content,
           components: generateDropDowns(interaction),
           embeds: [generateEmbed(interaction, interactionTimeout)],
         });
       }, 500);
+
+      for (const value of collectedInter.values) {
+        roleNames.push((await interaction.guild!.roles.fetch(value))!.name);
+      }
 
       await collectedInter.deferUpdate();
     });
@@ -68,21 +84,34 @@ const GiveRole: ICommand = {
     });
 
     removeCollector.on("collect", async (collectedInter) => {
+      if (interaction.user != collectedInter.user) {
+        void collectedInter.deferUpdate();
+        return;
+      }
+
       await (interaction.member! as DiscordJS.GuildMember).roles.remove(collectedInter.values);
 
       //Update to avoid stale cache
       await (interaction.member! as DiscordJS.GuildMember).fetch(true);
+
+      const roleNames: string[] = [];
 
       //The Remove method simply puts in a request to update the user roles, it doesn't actually wait for it to happen.
       //The only real way to know would be to hook into the Audit Log, but I haven't done the logic needed for that,
       //and this is only a stop-gap implementation anyway.
       //So instead, just wait a second. Should be good for the majority of situations.
       setTimeout(() => {
+        content += `\n**Removed:** ${roleNames.join(", ")}`;
         void interaction.editReply({
+          content: content,
           components: generateDropDowns(interaction),
           embeds: [generateEmbed(interaction, interactionTimeout)],
         });
       }, 500);
+
+      for (const value of collectedInter.values) {
+        roleNames.push((await interaction.guild!.roles.fetch(value))!.name);
+      }
 
       await collectedInter.deferUpdate();
     });
