@@ -6,6 +6,7 @@ import { IInfo } from "./module-definitions";
 
 type TBuilder =
   | DiscordJS.SlashCommandBuilder
+  | DiscordJS.SlashCommandSubcommandsOnlyBuilder
   | DiscordJS.ContextMenuCommandBuilder
   | Omit<DiscordJS.SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 
