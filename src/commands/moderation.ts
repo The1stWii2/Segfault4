@@ -94,12 +94,12 @@ const modLog: ICommand = {
           function generateButtons(pos: number, sizeOfSet: number) {
             return new DiscordJS.ActionRowBuilder<DiscordJS.ButtonBuilder>().addComponents(
               new DiscordJS.ButtonBuilder()
-                .setLabel("Older")
+                .setLabel("← Older")
                 .setStyle(DiscordJS.ButtonStyle.Secondary)
                 .setCustomId("older")
                 .setDisabled(!(pos < sizeOfSet - 1)),
               new DiscordJS.ButtonBuilder()
-                .setLabel("Newer")
+                .setLabel("Newer →")
                 .setStyle(DiscordJS.ButtonStyle.Secondary)
                 .setCustomId("newer")
                 .setDisabled(!(pos > 0))
@@ -119,7 +119,7 @@ const modLog: ICommand = {
             ephemeral: true,
             content: `Interaction expires <t:${interactionTimeout}:R>`,
             components: [generateButtons(position, storeSorted.length)],
-            embeds: [generateReportEmbed(storeSorted[position], user)],
+            embeds: [generateLogEntryEmbed(storeSorted[position], user)],
           });
 
           const olderFilter = message.createMessageComponentCollector<DiscordJS.ComponentType.Button>({
@@ -136,7 +136,7 @@ const modLog: ICommand = {
             position++;
             await interaction.editReply({
               components: [generateButtons(position, storeSorted.length)],
-              embeds: [generateReportEmbed(storeSorted[position], user)],
+              embeds: [generateLogEntryEmbed(storeSorted[position], user)],
             });
             void collectedInter.update({});
           });
@@ -145,7 +145,7 @@ const modLog: ICommand = {
             position--;
             await interaction.editReply({
               components: [generateButtons(position, storeSorted.length)],
-              embeds: [generateReportEmbed(storeSorted[position], user)],
+              embeds: [generateLogEntryEmbed(storeSorted[position], user)],
             });
             void collectedInter.update({});
           });
@@ -219,7 +219,7 @@ const modLog: ICommand = {
         saveStoreFile(interaction.guildId! as ID, "Moderation", store);
 
         await ((await interaction.guild!.channels.fetch(store.logChannel)) as DiscordJS.TextBasedChannel).send({
-          embeds: [generateReportEmbed(infraction, user)],
+          embeds: [generateLogEntryEmbed(infraction, user)],
           files: interaction.options.getAttachment("attachment")
             ? [interaction.options.getAttachment("attachment")!]
             : [],
@@ -233,7 +233,7 @@ const modLog: ICommand = {
   },
 };
 
-function generateReportEmbed(details: IModLogEntry, user: DiscordJS.User): DiscordJS.EmbedBuilder {
+function generateLogEntryEmbed(details: IModLogEntry, user: DiscordJS.User): DiscordJS.EmbedBuilder {
   const userAvatar = user.avatar
     ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=2048`
     : user.displayAvatarURL();
