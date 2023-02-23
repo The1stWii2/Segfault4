@@ -14,7 +14,7 @@ const SegInfo: ICommand = {
       .setTitle("Segfault")
       .setDescription("https://github.com/The1stWii2/Segfault4")
       .setImage("https://media.discordapp.net/attachments/588736222415814660/1058426064868753558/segfault.png")
-      .setFooter({ text: "Version: 4.2.0α" });
+      .setFooter({ text: "Version: 4.2.3α" });
 
     await interaction.reply({ embeds: [embed] });
   },

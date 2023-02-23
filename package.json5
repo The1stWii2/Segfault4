@@ -1,6 +1,6 @@
 {
   name: 'segfault',
-  version: '4.2.0α',
+  version: '4.2.3α',
   scripts: {
     'ts-node': 'ts-node ./src/segfault.ts',
     'ts-node-reload': 'ts-node ./src/segfault.ts -R',
