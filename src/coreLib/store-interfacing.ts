@@ -1,35 +1,44 @@
 import fs from "fs";
 import path from "path";
 import __CONFIGURATION__ from "../shared/globals";
+import { CoreLibError } from "./command-definitions";
 
 interface JSONLoose {
   [key: string]: any[] | any; //A looser definition for JSON Objects, which TypeScript can better parse.
 }
 
-export function loadStoreFile<T = JSONValue>(guildID: `${number}` | "global", command?: string): T | undefined {
-  if (fs.existsSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`))) {
-    const file = fs.readFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`));
+export function loadStoreFile<T = JSONValue>(guildID: `${number}` | "global", group: string): T | undefined {
+  if (fs.existsSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.${group}.json`))) {
+    const file = fs.readFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.${group}.json`));
 
     const store = JSON.parse(String(file)) as JSONLoose;
 
-    if (command === undefined) {
-      return store as T;
-    }
-    return store[command] as T;
+    return store as T;
   }
-  throw new Error(`Storage file for "${guildID}" was requested, but no such file exists!`);
+  throw new InvalidStorageFile(
+    `Storage file for "${guildID}, ${group ?? "(Shared)"}" was requested, but no such file exists!`
+  );
 }
 
 //TODO, ideally "command" should be implicitly passed, but that'll have to wait till I replace
 //objects with classes
-export function saveStoreFile<T = JSONValue>(guildID: `${number}` | "global", command: string, data: T) {
+export function saveStoreFile<T = JSONValue>(guildID: `${number}` | "global", group: string, data: T) {
   let store: JSONLoose = {};
-  if (fs.existsSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`))) {
+  if (fs.existsSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.${group}.json`))) {
     store = JSON.parse(
-      String(fs.readFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`)))
+      String(fs.readFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.${group}.json`)))
     ) as JSONLoose;
   }
-  store[command] = data;
+  store[group] = data;
 
-  fs.writeFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.json`), JSON.stringify(store));
+  fs.writeFileSync(
+    path.join(__CONFIGURATION__.filepaths.storageLocation, `${guildID}.${group}.json`),
+    JSON.stringify(store)
+  );
+}
+
+export class InvalidStorageFile extends CoreLibError {
+  constructor(message: string) {
+    super(message);
+  }
 }

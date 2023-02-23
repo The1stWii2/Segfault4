@@ -120,7 +120,7 @@ export type TInteraction = DiscordJS.CommandInteraction;
 
 export type TEpisode = (interaction: any) => Promise<void>;
 
-class CoreLibError extends Error {
+export class CoreLibError extends Error {
   constructor(message: string) {
     super(message);
   }

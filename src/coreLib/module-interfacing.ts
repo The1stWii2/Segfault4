@@ -6,7 +6,7 @@ import pc from "picocolors";
 import importFresh from "import-fresh";
 
 import { IModule } from "./module-definitions";
-import { loadStoreFile } from "./store-interfacing";
+import { InvalidStorageFile, loadStoreFile, saveStoreFile } from "./store-interfacing";
 import { CommandHandler } from "./command-definitions";
 
 //Intermediate interface, as we extract the actual module from default
@@ -71,19 +71,32 @@ export function initialiseModules() {
     if (typeof __LOADED_MODULES[moduleName].init === "function") {
       logger.info(`"${moduleName}" running Init function.`);
 
-      const store = loadStoreFile("global", moduleName);
-      //@ts-expect-error Apparently TS type inference fails here. It still thinks "once" can be undefined.
-      __LOADED_MODULES[moduleName].init(store);
+      try {
+        const store = loadStoreFile("global", moduleName);
+
+        //@ts-expect-error Apparently TS type inference fails here. It still thinks "once" can be undefined.
+        __LOADED_MODULES[moduleName].init(store);
+      } catch (e) {
+        if (e instanceof InvalidStorageFile) {
+          logger.warn(`No global storage file exists for "${moduleName}", creating empty one.`);
+
+          saveStoreFile("global", moduleName, {});
+
+          //@ts-expect-error See above
+          __LOADED_MODULES[moduleName].init(undefined);
+        }
+      }
     }
   }
 }
 
 export function loadGuildStoreModules() {
   //Load Guild configs
+  //TODO: Replace this with actually having a list of guilds
   const files = fs
     .readdirSync(__CONFIGURATION__.filepaths.storageLocation)
-    .filter((item) => item.match(/\d.+?\.json/))
-    .map((item) => path.parse(item).name);
+    .filter((item) => item.match(/\d.+?\..+?\.json/))
+    .map((item) => path.parse(item).name.split(".")[0]);
   for (const file of files) {
     logger.verbose(`Guild "${file}" store loaded.`);
 
@@ -92,9 +105,20 @@ export function loadGuildStoreModules() {
       if (typeof __LOADED_MODULES[moduleName].guildLoad === "function") {
         logger.info(`"${moduleName}" running Guild Init function.`);
 
-        const store = loadStoreFile(file as `${number}`, moduleName);
-        //@ts-expect-error Apparently TS type inference fails here. It still thinks "once" can be undefined.
-        __LOADED_MODULES[moduleName].guildLoad(file as `${number}`, store);
+        try {
+          const store = loadStoreFile(file as `${number}`, moduleName);
+          //@ts-expect-error Apparently TS type inference fails here. It still thinks "once" can be undefined.
+          __LOADED_MODULES[moduleName].guildLoad(file as `${number}`, store);
+        } catch (e) {
+          if (e instanceof InvalidStorageFile) {
+            logger.warn(`No guild storage file exists for "${file}, ${moduleName}", creating empty one.`);
+
+            saveStoreFile("global", moduleName, {});
+
+            //@ts-expect-error See above
+            __LOADED_MODULES[moduleName].guildLoad(file as `${number}`, undefined);
+          }
+        }
       }
     }
   }
@@ -106,9 +130,21 @@ export function postLoadModules() {
     if (typeof __LOADED_MODULES[moduleName].postLoad === "function") {
       logger.info(`"${moduleName}" running Post Init function.`);
 
-      const store = loadStoreFile("global", moduleName);
-      //@ts-expect-error Apparently TS type inference fails here. It still thinks "once" can be undefined.
-      __LOADED_MODULES[moduleName].postLoad(store);
+      try {
+        const store = loadStoreFile("global", moduleName);
+
+        //@ts-expect-error Apparently TS type inference fails here. It still thinks "once" can be undefined.
+        __LOADED_MODULES[moduleName].postLoad(store);
+      } catch (e) {
+        if (e instanceof InvalidStorageFile) {
+          logger.warn(`No global storage file exists for "${moduleName}, creating empty one.`);
+
+          saveStoreFile("global", moduleName, {});
+
+          //@ts-expect-error See above
+          __LOADED_MODULES[moduleName].init(undefined);
+        }
+      }
     }
   }
 }
