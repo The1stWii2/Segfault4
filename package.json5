@@ -6,13 +6,13 @@
     'ts-node-reload': 'ts-node ./src/segfault.ts -R',
   },
   dependencies: {
-    '@discordjs/builders': '^1.4.0',
-    '@discordjs/rest': '^1.5.0',
+    '@discordjs/builders': '^1.6.1',
+    '@discordjs/rest': '^1.7.0',
     '@types/mathjax': '^0.0.37',
     '@types/sharp': '^0.31.1',
     dayjs: '^1.11.7', //DayJS is just used for formatting dates for Winston
-    'discord-api-types': '^0.37.35',
-    'discord.js': '^14.7.1',
+    'discord-api-types': '^0.37.37',
+    'discord.js': '^14.9.0',
     'import-fresh': '^3.3.0', //Used for Module loading
     json5: '^2.2.3',
     'mathjax-full': '^3.2.2', //Maths rendering
@@ -25,13 +25,13 @@
   },
   devDependencies: {
     //Types
-    '@types/node': '^18.14.0',
+    '@types/node': '^18.15.11',
     '@types/node-dir': '^0.0.34',
     //Eslint
-    '@typescript-eslint/eslint-plugin': '^5.53.0',
-    '@typescript-eslint/parser': '^5.53.0',
-    eslint: '^8.34.0',
-    'eslint-config-prettier': '^8.6.0',
-    prettier: '^2.8.4',
+    '@typescript-eslint/eslint-plugin': '^5.57.1',
+    '@typescript-eslint/parser': '^5.57.1',
+    eslint: '^8.37.0',
+    'eslint-config-prettier': '^8.8.0',
+    prettier: '^2.8.7',
   },
 }
