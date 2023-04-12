@@ -280,7 +280,6 @@ const ListMembers: ICommand = {
     const pageSize = 10 * (ephemeral ? 2 : 1);
 
     const message = await interaction.editReply({
-      content: `Interaction expires <t:${interactionTimeout}:R>`,
       components: [generatePrevNextButtons(position * pageSize, Math.round(guildRole.members.size / pageSize))],
       embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
     });
