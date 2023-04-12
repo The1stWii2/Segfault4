@@ -239,16 +239,10 @@ function generateDropDowns(interaction: DiscordJS.CommandInteraction) {
 
 function generatePrevNextButtons(pos: number, sizeOfSet: number) {
   return new DiscordJS.ActionRowBuilder<DiscordJS.ButtonBuilder>().addComponents(
-    new DiscordJS.ButtonBuilder()
-      .setLabel("← Previous")
-      .setStyle(DiscordJS.ButtonStyle.Secondary)
-      .setCustomId("prev")
-      .setDisabled(!(pos > 0)),
-    new DiscordJS.ButtonBuilder()
-      .setLabel("Next →")
-      .setStyle(DiscordJS.ButtonStyle.Secondary)
-      .setCustomId("next")
-      .setDisabled(!(pos < sizeOfSet - 1))
+    new DiscordJS.ButtonBuilder().setLabel("← Previous").setStyle(DiscordJS.ButtonStyle.Secondary).setCustomId("prev"),
+    //.setDisabled(!(pos > 0)),
+    new DiscordJS.ButtonBuilder().setLabel("Next →").setStyle(DiscordJS.ButtonStyle.Secondary).setCustomId("next")
+    //.setDisabled(!(pos < sizeOfSet - 1))
   );
 }
 
@@ -280,7 +274,7 @@ const ListMembers: ICommand = {
     const pageSize = 10 * (ephemeral ? 2 : 1);
 
     const message = await interaction.editReply({
-      components: [generatePrevNextButtons(position * pageSize, Math.round(guildRole.members.size / pageSize))],
+      components: [generatePrevNextButtons(position, Math.ceil(guildRole.members.size / pageSize))],
       embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
     });
 
@@ -295,18 +289,20 @@ const ListMembers: ICommand = {
     });
 
     prevFilter.on("collect", async (collectedInter) => {
-      position--;
+      if (position == 0) position = Math.ceil(guildRole.members.size / pageSize) - 1;
+      else position--;
       await interaction.editReply({
-        components: [generatePrevNextButtons(position * pageSize, Math.round(guildRole.members.size / pageSize))],
+        components: [generatePrevNextButtons(position, Math.ceil(guildRole.members.size / pageSize))],
         embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
       });
       void collectedInter.update({});
     });
 
     nextFilter.on("collect", async (collectedInter) => {
-      position++;
+      if (position == Math.ceil(guildRole.members.size / pageSize) - 1) position = 0;
+      else position++;
       await interaction.editReply({
-        components: [generatePrevNextButtons(position * pageSize, Math.round(guildRole.members.size / pageSize))],
+        components: [generatePrevNextButtons(position, Math.ceil(guildRole.members.size / pageSize))],
         embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
       });
       void collectedInter.update({});
@@ -340,13 +336,13 @@ function generateListMembersEmbed(
     memberList.push(`${i + 1}. ${user}`);
   }
 
-  const page = Math.round(guildRole.members.size / pageSize);
+  const page = Math.ceil(guildRole.members.size / pageSize);
 
   const embed = new DiscordJS.EmbedBuilder()
     .setAuthor({
       name: `Viewing members of "${guildRole.name}"`,
     })
-    .setThumbnail(guildRole.icon)
+    .setThumbnail(guildRole.iconURL())
     .setColor(guildRole.color)
     .addFields(
       {
