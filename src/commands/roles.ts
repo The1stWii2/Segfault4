@@ -248,7 +248,7 @@ function generatePrevNextButtons(pos: number, sizeOfSet: number) {
       .setLabel("Next →")
       .setStyle(DiscordJS.ButtonStyle.Secondary)
       .setCustomId("next")
-      .setDisabled(!(pos < sizeOfSet))
+      .setDisabled(!(pos < sizeOfSet - 1))
   );
 }
 
