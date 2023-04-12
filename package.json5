@@ -11,7 +11,7 @@
     '@types/mathjax': '^0.0.37',
     '@types/sharp': '^0.31.1',
     dayjs: '^1.11.7', //DayJS is just used for formatting dates for Winston
-    'discord-api-types': '^0.37.37',
+    'discord-api-types': '^0.37.38',
     'discord.js': '^14.9.0',
     'import-fresh': '^3.3.0', //Used for Module loading
     json5: '^2.2.3',
@@ -28,9 +28,9 @@
     '@types/node': '^18.15.11',
     '@types/node-dir': '^0.0.34',
     //Eslint
-    '@typescript-eslint/eslint-plugin': '^5.57.1',
-    '@typescript-eslint/parser': '^5.57.1',
-    eslint: '^8.37.0',
+    '@typescript-eslint/eslint-plugin': '^5.58.0',
+    '@typescript-eslint/parser': '^5.58.0',
+    eslint: '^8.38.0',
     'eslint-config-prettier': '^8.8.0',
     prettier: '^2.8.7',
   },
