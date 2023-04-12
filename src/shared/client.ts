@@ -13,6 +13,7 @@ const botIntents = [
   DiscordAPI.GatewayIntentBits.MessageContent,
   DiscordAPI.GatewayIntentBits.GuildScheduledEvents,
   DiscordAPI.GatewayIntentBits.GuildPresences,
+  DiscordAPI.GatewayIntentBits.GuildMembers,
 ];
 
 export const __client = new DiscordJS.Client({ intents: botIntents });

@@ -33,7 +33,7 @@ const GiveRole: ICommand = {
       content: content,
       ephemeral: ephemeral,
       components: generateDropDowns(interaction),
-      embeds: [generateEmbed(interaction, interactionTimeout)],
+      embeds: [generateGiveRoleEmbed(interaction, interactionTimeout)],
     });
 
     //Capture Add Roles
@@ -65,7 +65,7 @@ const GiveRole: ICommand = {
         void interaction.editReply({
           content: content,
           components: generateDropDowns(interaction),
-          embeds: [generateEmbed(interaction, interactionTimeout)],
+          embeds: [generateGiveRoleEmbed(interaction, interactionTimeout)],
         });
       }, 500);
 
@@ -105,7 +105,7 @@ const GiveRole: ICommand = {
         void interaction.editReply({
           content: content,
           components: generateDropDowns(interaction),
-          embeds: [generateEmbed(interaction, interactionTimeout)],
+          embeds: [generateGiveRoleEmbed(interaction, interactionTimeout)],
         });
       }, 500);
 
@@ -118,7 +118,7 @@ const GiveRole: ICommand = {
   },
 };
 
-function generateEmbed(interaction: DiscordJS.CommandInteraction, timestamp: number) {
+function generateGiveRoleEmbed(interaction: DiscordJS.CommandInteraction, timestamp: number) {
   //TODO Remove duplicate code
   const userRoles = Array.from((interaction.member! as DiscordJS.GuildMember).roles.cache.keys());
 
@@ -237,11 +237,141 @@ function generateDropDowns(interaction: DiscordJS.CommandInteraction) {
   return output;
 }
 
+function generatePrevNextButtons(pos: number, sizeOfSet: number) {
+  return new DiscordJS.ActionRowBuilder<DiscordJS.ButtonBuilder>().addComponents(
+    new DiscordJS.ButtonBuilder()
+      .setLabel("← Previous")
+      .setStyle(DiscordJS.ButtonStyle.Secondary)
+      .setCustomId("prev")
+      .setDisabled(!(pos > 0)),
+    new DiscordJS.ButtonBuilder()
+      .setLabel("Next →")
+      .setStyle(DiscordJS.ButtonStyle.Secondary)
+      .setCustomId("next")
+      .setDisabled(!(pos < sizeOfSet))
+  );
+}
+
+const ListMembers: ICommand = {
+  info: { name: "List Members", shortDescr: "List members of role" },
+  builder: new DiscordJS.SlashCommandBuilder()
+    .setName("list-members")
+    .setDescription("List the members of a given role.")
+    .addRoleOption((option) => option.setName("role").setDescription("Role to check").setRequired(true))
+    .addBooleanOption((option) => option.setName("hide").setDescription("Only show result to you.").setRequired(false)),
+  episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
+    const interactionStart = Math.floor(Date.now() / 1000); //Discord uses Seconds instead of Milliseconds
+    const interactionTimeoutAmount = 60 * 3; //3 Minutes
+    const interactionTimeout = interactionStart + interactionTimeoutAmount;
+    const ephemeral = interaction.options.getBoolean("hide") ?? false;
+
+    const role = interaction.options.getRole("role", true);
+
+    //This might take some time
+    await interaction.deferReply({
+      ephemeral: ephemeral,
+    });
+
+    //Update to avoid stale cache
+    await interaction.guild!.members.fetch();
+    const guildRole = (await interaction.guild!.roles.fetch(role.id, { cache: true, force: true }))!;
+
+    let position = 0;
+    const pageSize = 10 * (ephemeral ? 2 : 1);
+
+    const message = await interaction.editReply({
+      content: `Interaction expires <t:${interactionTimeout}:R>`,
+      components: [generatePrevNextButtons(position * pageSize, guildRole.members.size / pageSize)],
+      embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
+    });
+
+    const prevFilter = message.createMessageComponentCollector<DiscordJS.ComponentType.Button>({
+      filter: (interaction: DiscordJS.ButtonInteraction) => interaction.customId === "prev",
+      time: interactionTimeoutAmount * 1000,
+    });
+
+    const nextFilter = message.createMessageComponentCollector<DiscordJS.ComponentType.Button>({
+      filter: (interaction: DiscordJS.ButtonInteraction) => interaction.customId === "next",
+      time: interactionTimeoutAmount * 1000,
+    });
+
+    prevFilter.on("collect", async (collectedInter) => {
+      position--;
+      await interaction.editReply({
+        components: [generatePrevNextButtons(position * pageSize, guildRole.members.size / pageSize)],
+        embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
+      });
+      void collectedInter.update({});
+    });
+
+    nextFilter.on("collect", async (collectedInter) => {
+      position++;
+      await interaction.editReply({
+        components: [generatePrevNextButtons(position * pageSize, guildRole.members.size / pageSize)],
+        embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
+      });
+      void collectedInter.update({});
+    });
+
+    setTimeout(() => {
+      if (ephemeral) void interaction.deleteReply();
+      else {
+        void interaction.editReply({
+          components: [],
+          embeds: [generateListMembersEmbed(guildRole, pageSize, position, 0)],
+        });
+      }
+    }, interactionTimeoutAmount * 1000); //Once interaction expires, delete the message.
+  },
+};
+
+function generateListMembersEmbed(
+  guildRole: DiscordJS.Role,
+  pageSize: number,
+  offset: number,
+  timeoutTimestamp: number
+) {
+  const memberList: string[] = [];
+  for (let i = offset * pageSize; i < (offset + 1) * pageSize; ++i) {
+    const member = guildRole.members.at(i);
+    if (!member) break;
+
+    const user = member.nickname ? `${member.nickname} (${member.user.username})` : member.user.username;
+
+    memberList.push(`${i + 1}. ${user}`);
+  }
+
+  const page = Math.round(guildRole.members.size / pageSize);
+
+  const embed = new DiscordJS.EmbedBuilder()
+    .setAuthor({
+      name: `Viewing members of "${guildRole.name}"`,
+    })
+    .setThumbnail(guildRole.icon)
+    .setColor(guildRole.color)
+    .addFields(
+      {
+        name: `Page ${offset + 1 != 0 ? offset + 1 : 1}/${page ? page : 1}`,
+        value: "\u200B",
+      },
+      {
+        name: "Members",
+        value: `\`\`\`py\n${memberList.join("\n")}\`\`\``,
+      }
+    );
+
+  if (timeoutTimestamp) {
+    embed.addFields({ name: "Interaction expires", value: `<t:${timeoutTimestamp}:R>` });
+  }
+  return embed;
+}
+
 const Roles: IModule<JSONValue, { toggle?: ID[]; addOnly?: ID[]; removeOnly?: ID[] }> = {
   tags: ["basic"],
   info: { name: "Roles", shortDescr: "Debug tools" },
   init: () => {
     __COMMAND_HANDLER.addCommandGlobal(GiveRole, "Roles");
+    __COMMAND_HANDLER.addCommandGlobal(ListMembers, "Roles");
   },
   guildLoad: (guildID, store) => {
     if (store) {
