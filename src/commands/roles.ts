@@ -281,7 +281,7 @@ const ListMembers: ICommand = {
 
     const message = await interaction.editReply({
       content: `Interaction expires <t:${interactionTimeout}:R>`,
-      components: [generatePrevNextButtons(position * pageSize, guildRole.members.size / pageSize)],
+      components: [generatePrevNextButtons(position * pageSize, Math.round(guildRole.members.size / pageSize))],
       embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
     });
 
@@ -298,7 +298,7 @@ const ListMembers: ICommand = {
     prevFilter.on("collect", async (collectedInter) => {
       position--;
       await interaction.editReply({
-        components: [generatePrevNextButtons(position * pageSize, guildRole.members.size / pageSize)],
+        components: [generatePrevNextButtons(position * pageSize, Math.round(guildRole.members.size / pageSize))],
         embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
       });
       void collectedInter.update({});
@@ -307,7 +307,7 @@ const ListMembers: ICommand = {
     nextFilter.on("collect", async (collectedInter) => {
       position++;
       await interaction.editReply({
-        components: [generatePrevNextButtons(position * pageSize, guildRole.members.size / pageSize)],
+        components: [generatePrevNextButtons(position * pageSize, Math.round(guildRole.members.size / pageSize))],
         embeds: [generateListMembersEmbed(guildRole, pageSize, position, interactionTimeout)],
       });
       void collectedInter.update({});
