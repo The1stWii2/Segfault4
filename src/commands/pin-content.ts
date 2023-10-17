@@ -30,7 +30,14 @@ class AssetEmbed {
   constructor(message?: DiscordJS.Message) {
     //TODO Handle message later
 
-    this.embed = { author: "", title: "", fileURL: "", description: "", includes: "", credit: "" };
+    this.embed = {
+      author: "",
+      title: "",
+      fileURL: "",
+      description: "",
+      includes: "",
+      credit: "",
+    };
     this._channel = "0";
   }
 
@@ -43,14 +50,17 @@ class AssetEmbed {
     embed.addFields(
       { name: "**Description**", value: this.embed.description },
       { name: "**Includes**", value: "```\n" + this.embed.includes + "\n```" },
-      { name: "**Credits**", value: this.embed.credit }
+      { name: "**Credits**", value: this.embed.credit },
     );
     if (this.embed.imageURL) embed.setImage(this.embed.imageURL);
     if (!final) {
       embed.addFields(
         { name: "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯", value: "\u200B" },
-        { name: "File URL", value: this.embed.fileURL ? this.embed.fileURL : "None!" },
-        { name: "Channel", value: `<#${this._channel}>` }
+        {
+          name: "File URL",
+          value: this.embed.fileURL ? this.embed.fileURL : "None!",
+        },
+        { name: "Channel", value: `<#${this._channel}>` },
       );
     }
     embed.setFooter({
@@ -69,7 +79,9 @@ class AssetEmbed {
     return this._channel;
   }
 
-  validate(): 0 | DiscordJS.EmbedBuilder /*Returns 0 if success, otherwise error Embed. A hack way*/ {
+  validate():
+    | 0
+    | DiscordJS.EmbedBuilder /*Returns 0 if success, otherwise error Embed. A hack way*/ {
     //Nonsense, go!
     const errorList: string[] = [];
 
@@ -122,16 +134,26 @@ const PostAsset: ICommand = {
   info: { name: "Post Asset", shortDescr: "foobar" },
   builder: new DiscordJS.SlashCommandBuilder()
     .setName("post-asset")
-    .setDescription("Post an asset to a channel (This command is subject to change!)")
-    .addBooleanOption((option) => option.setName("hide").setDescription("Only show result to you.").setRequired(false)),
+    .setDescription(
+      "Post an asset to a channel (This command is subject to change!)",
+    )
+    .addBooleanOption((option) =>
+      option
+        .setName("hide")
+        .setDescription("Only show result to you.")
+        .setRequired(false),
+    ),
   episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
     const interactionStart = Math.floor(Date.now() / 1000); //Discord uses Seconds instead of Milliseconds
     const interactionTimeout = interactionStart + 60 * 5; //5 Minute later
     const ephemeral = interaction.options.getBoolean("hide") ?? false;
 
-    setTimeout(() => {
-      void interaction.deleteReply();
-    }, 60 * 1000 * 5); //Once interaction expires, delete the message.
+    setTimeout(
+      () => {
+        void interaction.deleteReply();
+      },
+      60 * 1000 * 5,
+    ); //Once interaction expires, delete the message.
 
     const submitButton = new DiscordJS.ButtonBuilder()
       .setCustomId("submit")
@@ -144,12 +166,16 @@ const PostAsset: ICommand = {
       .setPlaceholder("✏️ Edit field(s)")
       .addOptions(
         { label: "Title", description: "Edit Title field", value: "title" },
-        { label: "Description", description: "Edit Description field", value: "description" },
+        {
+          label: "Description",
+          description: "Edit Description field",
+          value: "description",
+        },
         { label: "Includes", description: "Edit Includes", value: "includes" },
         { label: "File URL", description: "Edit File URL", value: "file" },
         { label: "Author", description: "Edit Author field", value: "author" },
         { label: "Credit", description: "Edit Credit field", value: "credit" },
-        { label: "imageURL", description: "Edit Image URL", value: "image" }
+        { label: "imageURL", description: "Edit Image URL", value: "image" },
       )
       .setMaxValues(5);
 
@@ -160,13 +186,30 @@ const PostAsset: ICommand = {
 
     const embed = new AssetEmbed();
 
-    const submitRow = new DiscordJS.ActionRowBuilder<DiscordJS.ButtonBuilder>().addComponents(submitButton);
-    const editRow = new DiscordJS.ActionRowBuilder<DiscordJS.StringSelectMenuBuilder>().addComponents(editSelect);
-    const channelRow = new DiscordJS.ActionRowBuilder<DiscordJS.StringSelectMenuBuilder>().addComponents(channelSelect);
+    const submitRow =
+      new DiscordJS.ActionRowBuilder<DiscordJS.ButtonBuilder>().addComponents(
+        submitButton,
+      );
+    const editRow =
+      new DiscordJS.ActionRowBuilder<DiscordJS.StringSelectMenuBuilder>().addComponents(
+        editSelect,
+      );
+    const channelRow =
+      new DiscordJS.ActionRowBuilder<DiscordJS.StringSelectMenuBuilder>().addComponents(
+        channelSelect,
+      );
 
     const message = await interaction.reply({
-      embeds: [embed.validate() != 0 ? (embed.validate() as DiscordJS.EmbedBuilder) : embed.generateEmbed()],
-      components: [...(embed.validate() == 0 ? [submitRow] : []), editRow, channelRow],
+      embeds: [
+        embed.validate() != 0
+          ? (embed.validate() as DiscordJS.EmbedBuilder)
+          : embed.generateEmbed(),
+      ],
+      components: [
+        ...(embed.validate() == 0 ? [submitRow] : []),
+        editRow,
+        channelRow,
+      ],
       ephemeral: ephemeral,
       content: `Interaction expires <t:${interactionTimeout}:R>`,
     });
@@ -184,12 +227,23 @@ const PostAsset: ICommand = {
       }
 
       //Check if updating field or channel
-      if (collectInter.values[0] == foo[0].value || collectInter.values[0] == foo[1].value) {
+      if (
+        collectInter.values[0] == foo[0].value ||
+        collectInter.values[0] == foo[1].value
+      ) {
         embed.channelID = collectInter.values[0] as `${number}`;
 
         await collectInter.update({
-          embeds: [embed.validate() != 0 ? (embed.validate() as DiscordJS.EmbedBuilder) : embed.generateEmbed()],
-          components: [...(embed.validate() == 0 ? [submitRow] : []), editRow, channelRow],
+          embeds: [
+            embed.validate() != 0
+              ? (embed.validate() as DiscordJS.EmbedBuilder)
+              : embed.generateEmbed(),
+          ],
+          components: [
+            ...(embed.validate() == 0 ? [submitRow] : []),
+            editRow,
+            channelRow,
+          ],
         });
         return;
       }
@@ -198,7 +252,9 @@ const PostAsset: ICommand = {
 
       const modal = new DiscordJS.ModalBuilder()
         .setCustomId("editModal")
-        .setTitle(longTitle.length > 45 ? "Editing multiple fields" : longTitle);
+        .setTitle(
+          longTitle.length > 45 ? "Editing multiple fields" : longTitle,
+        );
 
       // Add components to modal
       const fields = [];
@@ -220,7 +276,11 @@ const PostAsset: ICommand = {
       const actionRows = [];
 
       for (let i = 0; i < fields.length; i++) {
-        actionRows.push(new DiscordJS.ActionRowBuilder<DiscordJS.TextInputBuilder>().addComponents(fields[i]));
+        actionRows.push(
+          new DiscordJS.ActionRowBuilder<DiscordJS.TextInputBuilder>().addComponents(
+            fields[i],
+          ),
+        );
       }
 
       modal.addComponents(actionRows);
@@ -237,15 +297,24 @@ const PostAsset: ICommand = {
         await modalCollector.deferUpdate();
         for (const value of collectInter.values) {
           if (value == "file" || value == "image") {
-            embed.embed[value + "URL"] = modalCollector.fields.getTextInputValue(value);
+            embed.embed[value + "URL"] =
+              modalCollector.fields.getTextInputValue(value);
           } else {
             embed.embed[value] = modalCollector.fields.getTextInputValue(value);
           }
         }
 
         await interaction.editReply({
-          embeds: [embed.validate() != 0 ? (embed.validate() as DiscordJS.EmbedBuilder) : embed.generateEmbed()],
-          components: [...(embed.validate() == 0 ? [submitRow] : []), editRow, channelRow],
+          embeds: [
+            embed.validate() != 0
+              ? (embed.validate() as DiscordJS.EmbedBuilder)
+              : embed.generateEmbed(),
+          ],
+          components: [
+            ...(embed.validate() == 0 ? [submitRow] : []),
+            editRow,
+            channelRow,
+          ],
         });
       }
     });
@@ -258,7 +327,9 @@ const PostAsset: ICommand = {
     submitCollector.on("collect", async (collectInter) => {
       if (collectInter.user != interaction.user) return;
 
-      await (__client.channels.cache.get(embed.channelID) as DiscordJS.TextChannel).send({
+      await (
+        __client.channels.cache.get(embed.channelID) as DiscordJS.TextChannel
+      ).send({
         embeds: [embed.generateEmbed(true)],
       });
 

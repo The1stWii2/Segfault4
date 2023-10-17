@@ -7,6 +7,10 @@ import pc from "picocolors";
 import { init } from "./init";
 import __CONFIGURATION__, { __REST } from "./shared/globals";
 
+//Hack to work around Canvas bug
+import { createCanvas } from "node-canvas-webgl";
+createCanvas(0, 0);
+
 //Begin
 logger.info("Starting Segfault");
 
@@ -15,7 +19,9 @@ process.on("uncaughtException", (error) => {
   logger.log({
     level: "critical",
     message: util.format(error),
-    header: `${pc.red("An uncaught exception occurred!")}\n--------------------------`,
+    header: `${pc.red(
+      "An uncaught exception occurred!",
+    )}\n--------------------------`,
     footer: "--------------------------",
   });
 });
@@ -30,19 +36,26 @@ interface IPersistFile {
 if (!fs.existsSync(__CONFIGURATION__.filepaths.storageLocation)) {
   logger.warn(
     `No storage directory exists at specified address, "${path.resolve(
-      __CONFIGURATION__.filepaths.storageLocation
-    )}", ("${__CONFIGURATION__.filepaths.storageLocation}")... Creating one.`
+      __CONFIGURATION__.filepaths.storageLocation,
+    )}", ("${__CONFIGURATION__.filepaths.storageLocation}")... Creating one.`,
   );
   fs.mkdirSync(__CONFIGURATION__.filepaths.storageLocation);
 }
 //If global.json exists
-if (!fs.existsSync(path.join(__CONFIGURATION__.filepaths.storageLocation, "global.json"))) {
+if (
+  !fs.existsSync(
+    path.join(__CONFIGURATION__.filepaths.storageLocation, "global.json"),
+  )
+) {
   logger.warn(
     `No global storage exists in Storage location, "${path.resolve(
-      path.join(__CONFIGURATION__.filepaths.storageLocation, "global.json")
-    )}"... Creating one.`
+      path.join(__CONFIGURATION__.filepaths.storageLocation, "global.json"),
+    )}"... Creating one.`,
   );
-  fs.writeFileSync(path.join(__CONFIGURATION__.filepaths.storageLocation, "global.json"), "{}");
+  fs.writeFileSync(
+    path.join(__CONFIGURATION__.filepaths.storageLocation, "global.json"),
+    "{}",
+  );
 }
 
 void init(process.argv.includes("-R"));
