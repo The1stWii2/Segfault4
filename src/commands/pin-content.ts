@@ -145,14 +145,14 @@ const PostAsset: ICommand = {
     ),
   episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
     const interactionStart = Math.floor(Date.now() / 1000); //Discord uses Seconds instead of Milliseconds
-    const interactionTimeout = interactionStart + 60 * 5; //5 Minute later
+    const interactionTimeout = interactionStart + 60 * 10; //10 Minute later
     const ephemeral = interaction.options.getBoolean("hide") ?? false;
 
     setTimeout(
       () => {
         void interaction.deleteReply();
       },
-      60 * 1000 * 5,
+      60 * 1000 * 10,
     ); //Once interaction expires, delete the message.
 
     const submitButton = new DiscordJS.ButtonBuilder()
@@ -216,7 +216,7 @@ const PostAsset: ICommand = {
 
     const editCollector = message.createMessageComponentCollector({
       componentType: DiscordJS.ComponentType.StringSelect,
-      time: 5 * 60 * 1000, //5 minutes
+      time: 10 * 60 * 1000, //10 minutes
     });
 
     editCollector.on("collect", async (collectInter) => {
@@ -289,7 +289,7 @@ const PostAsset: ICommand = {
       //Currently I don't have a good way to detect if the user dismisses the Modal
       //I also board a plan in less than 20 hours, so...
       const modalCollector = await collectInter.awaitModalSubmit({
-        time: 5 * 60 * 1000,
+        time: 10 * 60 * 1000,
       });
 
       //Awful awful-ness
@@ -321,7 +321,7 @@ const PostAsset: ICommand = {
 
     const submitCollector = message.createMessageComponentCollector({
       componentType: DiscordJS.ComponentType.Button,
-      time: 5 * 60 * 1000,
+      time: 10 * 60 * 1000,
     });
 
     submitCollector.on("collect", async (collectInter) => {

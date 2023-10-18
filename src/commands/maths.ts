@@ -45,8 +45,10 @@ function TexToSVG(math: string): { svg: string; errored: boolean } {
   //
   //It's /awful/
   const error: string | undefined = (
-    (((node.children[0] as LiteElement).children[1] as LiteElement).children[0] as LiteElement)
-      .children[0] as LiteElement
+    (
+      ((node.children[0] as LiteElement).children[1] as LiteElement)
+        .children[0] as LiteElement
+    ).children[0] as LiteElement
   ).attributes["data-mjx-error"] as string | undefined;
 
   if (error) {
@@ -60,18 +62,28 @@ const TexRender: ICommand = {
   builder: new DiscordJS.SlashCommandBuilder()
     .setName("tex-render")
     .setDescription("Displays the result of a TeX input as an image")
-    .addStringOption((option) => option.setName("equation").setDescription("Equation to display.").setRequired(false))
+    .addStringOption((option) =>
+      option
+        .setName("equation")
+        .setDescription("Equation to display.")
+        .setRequired(false),
+    )
     .addBooleanOption((option) =>
       option
         .setName("use-modal")
-        .setDescription("Use a modal to input equation instead (allows multiple lines)")
-        .setRequired(false)
+        .setDescription(
+          "Use a modal to input equation instead (allows multiple lines)",
+        )
+        .setRequired(false),
     ),
   episode: async (interaction: DiscordJS.ChatInputCommandInteraction) => {
     let inputString = "";
     let modalCollector;
 
-    if (interaction.options.getString("equation") && !interaction.options.getBoolean("use-modal")) {
+    if (
+      interaction.options.getString("equation") &&
+      !interaction.options.getBoolean("use-modal")
+    ) {
       inputString = interaction.options.getString("equation")!;
     } else {
       const modal = new DiscordJS.ModalBuilder()
@@ -83,8 +95,12 @@ const TexRender: ICommand = {
               .setCustomId("equation")
               .setLabel("Enter TeX equation")
               .setStyle(DiscordJS.TextInputStyle.Paragraph)
-              .setValue(interaction.options.getString("equation") ? interaction.options.getString("equation")! : "")
-          )
+              .setValue(
+                interaction.options.getString("equation")
+                  ? interaction.options.getString("equation")!
+                  : "",
+              ),
+          ),
         );
 
       await interaction.showModal(modal);
@@ -106,12 +122,18 @@ const TexRender: ICommand = {
     if (TeXResult.errored) {
       outputString += `\nError:\n\`\`\`${TeXResult.svg}\`\`\``;
     } else {
-      const image = await sharp(Buffer.from(TeXResult.svg)).resize(1024).png().toBuffer();
+      const image = await sharp(Buffer.from(TeXResult.svg))
+        .resize(1024)
+        .png()
+        .toBuffer();
 
       attachment = new DiscordJS.AttachmentBuilder(image).setName("result.png");
     }
 
-    const output = { content: outputString, files: attachment ? [attachment] : [] };
+    const output = {
+      content: outputString,
+      files: attachment ? [attachment] : [],
+    };
 
     if (!modalCollector) {
       await interaction.reply(output);
